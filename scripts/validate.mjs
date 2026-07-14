@@ -33,8 +33,12 @@ assert(JSON.stringify(highIds) === JSON.stringify(Array.from({ length: 16 }, (_,
 assert(fast.includes('href="full-course/"'), 'fast-track: low-age ten-course route missing');
 assert(fast.includes("url:'https://www.autodraw.com/'"), 'fast-track: AutoDraw route missing');
 assert(fast.includes("url:'https://quickdraw.withgoogle.com/'"), 'fast-track: Quick, Draw! route missing');
+assert(fast.includes("url:'https://teachablemachine.withgoogle.com/train/image'"), 'fast-track: Teachable Machine route missing');
+assert(fast.includes('Transformer') && fast.includes('Token'), 'fast-track: Transformer and token boundary missing');
+assert(fast.includes('当前对话') && fast.includes('保存记忆') && fast.includes('不是人的回忆'), 'fast-track: context and saved-memory boundary missing');
+assert(fast.includes("type:'contextlab'") && fast.includes('data-copy-prompt') && fast.includes('data-context-result'), 'fast-track: real context experiment missing');
 assert(fast.includes("fallback:'autodraw'") && fast.includes("fallback:'quickdraw'"), 'fast-track: local drawing fallbacks missing');
-assert(fast.includes("type:'trainer'") && fast.includes("type:'sensor'") && fast.includes("type:'debug'"), 'fast-track: core full-screen tools missing');
+assert(fast.includes("type:'sensor'") && fast.includes("type:'debug'"), 'fast-track: core full-screen tools missing');
 
 const full = await readFile(new URL('full-course/index.html', root), 'utf8');
 const lessonIds = [...full.matchAll(/\{id:(\d+),icon:/g)].map(match => Number(match[1]));
@@ -76,8 +80,10 @@ for (const id of ['catSamples','dogSamples','trainerSteps','trainerNext','traine
   assert(full.includes(`id="${id}"`), `full-course: lesson 4 guided interaction missing ${id}`);
 }
 for (const banned of ['太阳能量','森林能量','训练题','训练台','考试题','考试','考题','新题','测评','控制台','得分','永久变聪明','永远变聪明']) {
+  assert(!fast.includes(banned), `fast-track: rejected wording returned: ${banned}`);
   assert(!full.includes(banned), `full-course: rejected lesson 4 wording returned: ${banned}`);
 }
+assert(full.includes('Transformer 会看前后文字') && full.includes('当前聊天或保存便签'), 'full-course: child-friendly Transformer or memory boundary missing');
 assert(full.includes("card.dataset.sample==='wrong-cat'") && full.includes('state.tool.trainerPhase=5'), 'full-course: lesson 4 find-fix-retry flow missing');
 assert(full.includes("if(s.type==='tool')$('teacherPanel').hidden=true"), 'full-course: rehearsal overlay must close on interactive tool slides');
 assert(full.includes('promptResult') && full.includes('improvePrompt'), 'full-course: prompt tool must show and improve a result');
@@ -87,4 +93,4 @@ assert(full.includes('projectArtifact') && full.includes('fixArtifact'), 'full-c
 const topLevel = await readdir(root);
 assert(!topLevel.some(name => /secrets|\.env$/i.test(name)), 'repository root: sensitive filename detected');
 
-console.log('validate: bright PPT decks, 16-slide high course, 10 real AI labs, 90 teacher scripts, local fallbacks and routes passed');
+console.log('validate: bright PPT decks, synchronized 16-slide Transformer/memory course, 10 real AI labs, 90 teacher scripts, local fallbacks and routes passed');
