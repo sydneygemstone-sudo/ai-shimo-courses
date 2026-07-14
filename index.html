@@ -2,660 +2,171 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="color-scheme" content="dark light">
-  <title>毛球重构课 · 一小时看懂 AI</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fff8e8">
+  <meta name="description" content="毛球与小驯养师：三年级一小时 AI 实模重构课，以及一二年级十课入口。">
+  <title>毛球训练营 · 一小时高阶版</title>
   <style>
-    :root {
-      --ink:#f8f7ff;
-      --muted:#c7c5d9;
-      --panel:rgba(255,255,255,.085);
-      --line:rgba(255,255,255,.16);
-      --violet:#8d77ff;
-      --cyan:#59d9ff;
-      --mint:#67efc3;
-      --amber:#ffc765;
-      --rose:#ff7fa3;
-      --bg-a:#111226;
-      --bg-b:#241a48;
-      --shadow:0 24px 70px rgba(0,0,0,.28);
+    :root{
+      --ink:#28201a;--soft:#65584d;--cream:#fff8e8;--paper:#fffdf8;--gold:#c98a2d;
+      --gold2:#f2b84b;--green:#2c5743;--blue:#2a6a9e;--sky:#eaf4fb;--mint:#eaf7ef;
+      --peach:#fff0e5;--pink:#ffeaf1;--line:#ead8b7;--shadow:0 20px 55px rgba(95,64,28,.14);
+      --ui:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      --story:"Songti SC","STSong",serif;
     }
-    * { box-sizing:border-box; }
-    html, body { margin:0; min-height:100%; background:var(--bg-a); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif; }
-    button, a { font:inherit; }
-    button { color:inherit; }
-    body { min-height:100dvh; overflow-x:hidden; background:
-      radial-gradient(circle at 12% 8%, rgba(89,217,255,.14), transparent 34%),
-      radial-gradient(circle at 85% 18%, rgba(141,119,255,.22), transparent 38%),
-      linear-gradient(145deg,var(--bg-a),var(--bg-b)); }
-    .shell { width:min(1180px,100%); margin:auto; padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left)); }
-    .eyebrow { color:var(--cyan); font-weight:800; letter-spacing:.16em; text-transform:uppercase; font-size:.78rem; }
-    h1,h2,h3,p { margin-top:0; }
-    h1 { font-size:clamp(2.5rem,7vw,5.5rem); line-height:.96; letter-spacing:-.045em; margin-bottom:18px; }
-    h2 { font-size:clamp(2rem,5.3vw,4.5rem); line-height:1.03; letter-spacing:-.035em; }
-    h3 { font-size:clamp(1.1rem,2vw,1.5rem); }
-    p { line-height:1.62; }
-    .lead { color:var(--muted); font-size:clamp(1rem,2vw,1.35rem); max-width:820px; }
-    .accent { color:var(--mint); }
-    .launcher { min-height:calc(100dvh - 40px); display:grid; align-content:center; gap:28px; }
-    .hero { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(240px,.55fr); gap:28px; align-items:center; }
-    .orb { width:min(260px,70vw); aspect-ratio:1; border-radius:50%; display:grid; place-items:center; font-size:clamp(5rem,14vw,9rem); background:
-      radial-gradient(circle at 35% 28%,rgba(255,255,255,.88) 0 6%,rgba(255,255,255,.18) 7% 16%,transparent 17%),
-      linear-gradient(145deg,rgba(89,217,255,.58),rgba(141,119,255,.66)); box-shadow:var(--shadow),inset 0 0 0 1px rgba(255,255,255,.28); animation:float 4s ease-in-out infinite; }
-    @keyframes float { 50% { transform:translateY(-10px) rotate(2deg); } }
-    @media (prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; animation:none!important; transition:none!important; } }
-    .tracks { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
-    .track { padding:22px; border:1px solid var(--line); border-radius:22px; background:var(--panel); text-align:left; cursor:pointer; box-shadow:0 10px 35px rgba(0,0,0,.12); }
-    .track:hover,.track:focus-visible { border-color:var(--cyan); transform:translateY(-2px); outline:3px solid rgba(89,217,255,.25); outline-offset:2px; }
-    .track strong { display:block; font-size:1.35rem; margin-bottom:8px; }
-    .track span { color:var(--muted); line-height:1.5; }
-    .track[data-track-select="older"] { order:-1; border-color:rgba(98,239,190,.48); background:linear-gradient(145deg,rgba(98,239,190,.12),rgba(89,217,255,.08)); }
-    .prep { display:flex; gap:10px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:.92rem; }
-    .chip { display:inline-flex; align-items:center; gap:7px; padding:8px 11px; border:1px solid var(--line); border-radius:999px; background:rgba(0,0,0,.14); }
-    button.chip { color:var(--muted); cursor:pointer; }
-    button.chip:hover,button.chip:focus-visible { color:var(--ink); border-color:var(--cyan); outline:3px solid rgba(89,217,255,.2); outline-offset:2px; }
-    .dot { width:8px; height:8px; border-radius:50%; background:var(--mint); }
-    .deck { min-height:calc(100dvh - 40px); display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:12px; }
-    .deck[hidden], .launcher[hidden] { display:none; }
-    .topbar,.bottombar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-    .topbar { padding-top:2px; }
-    .brand { display:flex; align-items:center; gap:10px; min-width:0; }
-    .brand-mark { width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:linear-gradient(135deg,var(--cyan),var(--violet)); box-shadow:0 8px 20px rgba(89,217,255,.18); }
-    .brand-copy strong { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .brand-copy span { color:var(--muted); font-size:.82rem; }
-    .tools { display:flex; gap:8px; flex-wrap:wrap; }
-    .btn { min-height:44px; border:1px solid var(--line); border-radius:13px; padding:9px 14px; background:rgba(255,255,255,.07); color:var(--ink); cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:7px; }
-    .btn:hover,.btn:focus-visible { border-color:var(--cyan); background:rgba(89,217,255,.13); outline:3px solid rgba(89,217,255,.2); outline-offset:2px; }
-    .btn.primary { color:#0b1220; background:linear-gradient(135deg,var(--mint),var(--cyan)); border-color:transparent; font-weight:800; }
-    .btn.warn { background:rgba(255,199,101,.12); border-color:rgba(255,199,101,.45); }
-    .stage { position:relative; min-height:0; border:1px solid var(--line); border-radius:28px; overflow:hidden; box-shadow:var(--shadow); background:rgba(8,9,24,.64); }
-    .progress { position:absolute; inset:0 0 auto; height:5px; background:rgba(255,255,255,.09); z-index:5; }
-    .progress span { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--mint),var(--cyan),var(--violet)); transition:width .25s ease; }
-    .slide { display:none; min-height:min(720px,calc(100dvh - 154px)); padding:clamp(30px,6vw,76px); position:relative; overflow:hidden; align-content:center; }
-    .slide.active { display:grid; }
-    .slide::after { content:""; position:absolute; width:420px; height:420px; border-radius:50%; right:-180px; bottom:-250px; background:radial-gradient(circle,rgba(141,119,255,.28),transparent 68%); pointer-events:none; }
-    .slide[data-tone="cyan"] { background:linear-gradient(145deg,rgba(20,47,66,.82),rgba(11,16,38,.94)); }
-    .slide[data-tone="violet"] { background:linear-gradient(145deg,rgba(45,30,81,.82),rgba(12,12,34,.94)); }
-    .slide[data-tone="mint"] { background:linear-gradient(145deg,rgba(20,65,62,.75),rgba(10,20,34,.94)); }
-    .slide[data-tone="amber"] { background:linear-gradient(145deg,rgba(79,55,27,.72),rgba(15,15,35,.94)); }
-    .slide-grid { display:grid; grid-template-columns:minmax(0,1.12fr) minmax(260px,.88fr); gap:28px; align-items:center; position:relative; z-index:1; }
-    .kicker { display:flex; align-items:center; gap:9px; color:var(--cyan); font-size:.85rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; margin-bottom:16px; }
-    .time-pill { padding:6px 9px; border:1px solid currentColor; border-radius:999px; letter-spacing:0; text-transform:none; }
-    .statement { font-size:clamp(1.35rem,3.5vw,2.6rem); line-height:1.28; font-weight:800; max-width:920px; }
-    .cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:22px; }
-    .card { padding:18px; border-radius:18px; border:1px solid var(--line); background:rgba(255,255,255,.07); }
-    .card strong { display:block; margin-bottom:7px; font-size:1.08rem; }
-    .card p { color:var(--muted); margin:0; font-size:.94rem; }
-    .steps { display:grid; gap:11px; margin-top:18px; }
-    .step { display:grid; grid-template-columns:42px minmax(0,1fr); gap:12px; align-items:start; padding:13px 0; border-bottom:1px solid var(--line); }
-    .step:last-child { border-bottom:0; }
-    .num { width:38px; height:38px; border-radius:12px; display:grid; place-items:center; color:#0c1420; font-weight:900; background:var(--mint); }
-    .step strong { display:block; margin:2px 0 5px; }
-    .step p { margin:0; color:var(--muted); }
-    .activity { padding:20px; border-radius:22px; border:1px solid rgba(89,217,255,.35); background:rgba(89,217,255,.08); }
-    .activity h3 { margin-bottom:8px; }
-    .activity p { color:var(--muted); }
-    .activity-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
-    .fallback { margin-top:16px; padding:13px 15px; border-left:4px solid var(--amber); background:rgba(255,199,101,.08); color:#fff2d2; }
-    .flow { display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin:26px 0; }
-    .node { padding:12px 15px; border-radius:14px; background:rgba(255,255,255,.09); border:1px solid var(--line); font-weight:800; }
-    .arrow { color:var(--cyan); font-weight:900; }
-    .big-emoji { font-size:clamp(5rem,14vw,10rem); text-align:center; filter:drop-shadow(0 18px 20px rgba(0,0,0,.25)); }
-    .exit-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:20px; }
-    .exit { padding:18px; border-radius:18px; background:rgba(255,255,255,.07); border:1px solid var(--line); }
-    .exit b { color:var(--mint); }
-    .teacher-note { display:none; }
-    .notes-panel { position:absolute; left:18px; right:18px; bottom:18px; z-index:7; max-height:42%; overflow:auto; padding:16px 18px; border-radius:18px; border:1px solid rgba(255,199,101,.42); background:rgba(16,13,27,.96); box-shadow:var(--shadow); }
-    .notes-panel[hidden] { display:none; }
-    .notes-panel strong { color:var(--amber); }
-    .notes-panel p { margin:.45rem 0 0; color:#f3edff; }
-    .slide-count { color:var(--muted); font-variant-numeric:tabular-nums; }
-    .timer { color:var(--mint); font-variant-numeric:tabular-nums; font-weight:800; }
-    .route-check { color:var(--muted); font-size:.82rem; }
-    .route-check.ok { color:var(--mint); }
-    .route-check.bad { color:var(--rose); }
-    .mini-trainer { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:18px; }
-    .train-bin { padding:16px; border:1px solid var(--line); border-radius:17px; background:rgba(255,255,255,.06); }
-    .train-bin b { display:block; margin-bottom:8px; }
-    .train-samples { min-height:42px; font-size:1.55rem; letter-spacing:.12em; }
-    .train-result { grid-column:1/-1; padding:13px 15px; border-radius:14px; background:rgba(0,0,0,.2); color:var(--muted); }
-    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-    @media (max-width:760px), (orientation:portrait) {
-      .shell { padding:12px max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)); }
-      .launcher,.deck { min-height:calc(100dvh - 26px); }
-      .hero,.slide-grid { grid-template-columns:1fr; }
-      .orb { width:150px; justify-self:center; font-size:5rem; }
-      .tracks,.cards,.exit-grid,.mini-trainer { grid-template-columns:1fr; }
-      .stage { border-radius:20px; }
-      .slide { min-height:calc(100dvh - 180px); padding:32px 20px 86px; align-content:start; overflow:auto; }
-      .slide h2 { font-size:clamp(2rem,10vw,3.2rem); }
-      .big-emoji { display:none; }
-      .topbar { align-items:flex-start; }
-      .tools .btn span.optional { display:none; }
-      .bottombar .btn { flex:1; }
-      .notes-panel { left:10px; right:10px; bottom:10px; max-height:55%; }
-    }
-    @media print {
-      body { background:#fff; color:#111; }
-      .launcher,.topbar,.bottombar,.progress,.notes-panel { display:none!important; }
-      .deck { display:block!important; }
-      .stage { border:0; box-shadow:none; }
-      .slide { display:block!important; min-height:auto; page-break-after:always; background:#fff!important; color:#111; }
-      .slide .lead,.slide .card p,.slide .step p,.slide .activity p { color:#333; }
-    }
+    *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden}
+    body{font-family:var(--ui);color:var(--ink);background:var(--cream)}
+    button,a,input{font:inherit} button,a{color:inherit}.hidden,[hidden]{display:none!important}
+    button:focus-visible,a:focus-visible,input:focus-visible{outline:4px solid rgba(42,106,158,.28);outline-offset:3px}
+    .chooser{height:100dvh;padding:max(22px,env(safe-area-inset-top)) max(28px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(28px,env(safe-area-inset-left));display:grid;grid-template-rows:auto 1fr auto;gap:18px;background:
+      radial-gradient(circle at 12% 12%,#fff 0 7%,transparent 8%),radial-gradient(circle at 90% 16%,#dff4ff 0 11%,transparent 12%),linear-gradient(145deg,#fffdf7,#fff1ce)}
+    .chooser-top{display:flex;justify-content:space-between;align-items:center;gap:16px}.mini-brand{display:flex;align-items:center;gap:10px;font-weight:900}.mini-dot{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#fff;border:2px solid var(--line);box-shadow:0 6px 18px rgba(95,64,28,.1)}
+    .quiet-link{font-size:15px;text-decoration:none;color:var(--soft);padding:10px 14px;border-radius:999px;border:2px solid var(--line);background:rgba(255,255,255,.72)}
+    .chooser-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.8fr);align-items:center;gap:4vw;width:min(1240px,100%);margin:auto}
+    .chooser-copy h1{font-family:var(--story);font-size:clamp(54px,6.6vw,96px);line-height:1.02;letter-spacing:-.05em;margin:0 0 16px;color:var(--green)}
+    .chooser-copy p{font-size:clamp(22px,2.1vw,32px);line-height:1.45;margin:0;color:var(--soft);max-width:760px}.chooser-copy strong{color:var(--gold)}
+    .route-list{display:grid;gap:16px}.route{display:grid;grid-template-columns:76px 1fr auto;align-items:center;gap:18px;padding:22px;border:3px solid var(--line);border-radius:28px;background:rgba(255,253,248,.92);box-shadow:var(--shadow);text-decoration:none;text-align:left;cursor:pointer;transition:.2s ease}
+    .route:hover{transform:translateY(-4px);border-color:var(--gold2)}.route.recommended{background:#fff4cf;border-color:#e7b955}.route-icon{width:72px;height:72px;border-radius:24px;display:grid;place-items:center;font-size:42px;background:var(--sky)}.route.recommended .route-icon{background:#ffe09a}
+    .route b{display:block;font-size:clamp(22px,2vw,29px);margin-bottom:5px}.route span{display:block;color:var(--soft);font-size:17px;line-height:1.35}.route-go{font-size:34px;color:var(--gold)}
+    .chooser-foot{text-align:center;color:var(--soft);font-size:15px}.chooser-mq{width:min(250px,30vw);margin:8px auto 0;filter:drop-shadow(0 20px 18px rgba(118,73,27,.16));animation:float 4s ease-in-out infinite}
+
+    .deck{position:fixed;inset:0;display:grid;grid-template-rows:64px minmax(0,1fr) 76px;background:var(--cream)}
+    .deck-top,.deck-bottom{display:flex;align-items:center;gap:12px;padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right));background:rgba(255,253,248,.96);z-index:20}
+    .deck-top{justify-content:space-between;border-bottom:2px solid var(--line)}.deck-bottom{justify-content:space-between;border-top:2px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+    .deck-brand{display:flex;align-items:center;gap:10px;min-width:0}.deck-brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lesson-time{font-weight:900;color:var(--blue);white-space:nowrap}.top-actions,.nav-actions{display:flex;gap:9px;align-items:center}
+    .icon-btn,.nav-btn{min-height:46px;border:2px solid var(--line);border-radius:15px;background:#fff;cursor:pointer;padding:8px 14px;font-weight:800}.nav-btn{min-width:118px;font-size:18px}.nav-btn.primary{background:var(--green);border-color:var(--green);color:#fff}.icon-btn:hover,.nav-btn:hover{border-color:var(--gold)}
+    .slide-count{font-size:17px;color:var(--soft);font-variant-numeric:tabular-nums}.dots{display:flex;gap:6px;align-items:center;justify-content:center;flex:1}.dot{width:10px;height:10px;border:0;padding:0;border-radius:99px;background:#decdb1;cursor:pointer}.dot.done{background:#efbd52}.dot.active{width:30px;background:var(--green)}
+    .stage{position:relative;min-height:0;overflow:hidden}.slide{height:100%;padding:clamp(28px,4.5vw,70px) clamp(30px,7vw,108px);display:grid;align-content:center;position:relative;overflow:hidden;animation:slideIn .4s ease}.slide::before{content:"";position:absolute;width:26vw;height:26vw;min-width:250px;min-height:250px;border-radius:50%;right:-10vw;top:-13vw;background:rgba(255,255,255,.42)}
+    .tone-cream{background:linear-gradient(145deg,#fffdf7,#fff2d8)}.tone-sky{background:linear-gradient(145deg,#f7fcff,var(--sky))}.tone-mint{background:linear-gradient(145deg,#fbfffc,var(--mint))}.tone-peach{background:linear-gradient(145deg,#fffaf5,var(--peach))}.tone-pink{background:linear-gradient(145deg,#fffafd,var(--pink))}.tone-yellow{background:linear-gradient(145deg,#fffdf4,#fff0ad)}
+    .slide-inner{width:min(1220px,100%);margin:auto;position:relative;z-index:2}.center{text-align:center}.scene{display:grid;grid-template-columns:minmax(240px,.72fr) minmax(0,1.28fr);align-items:center;gap:clamp(24px,5vw,80px)}
+    .mq-wrap{display:grid;justify-items:center;align-items:center}.mq{width:clamp(170px,22vw,300px);height:auto;filter:drop-shadow(0 20px 16px rgba(111,67,24,.18));animation:float 4s ease-in-out infinite}.mq.sidekick{width:clamp(110px,12vw,165px)}
+    .bubble{position:relative;background:var(--paper);border:4px solid #e3c79c;border-radius:32px;padding:clamp(24px,3vw,42px);font-family:var(--story);font-size:clamp(34px,3.8vw,58px);line-height:1.28;color:#704b20;box-shadow:var(--shadow)}.bubble::before{content:"";position:absolute;left:-27px;top:48%;width:42px;height:42px;background:var(--paper);border-left:4px solid #e3c79c;border-bottom:4px solid #e3c79c;transform:rotate(45deg)}
+    .eyebrow{font-size:clamp(16px,1.4vw,21px);font-weight:900;letter-spacing:.12em;color:var(--gold);margin-bottom:12px}.big-title{font-family:var(--story);font-size:clamp(54px,6.4vw,94px);line-height:1.05;letter-spacing:-.045em;color:var(--green);margin:0}.subline{font-size:clamp(26px,2.6vw,39px);line-height:1.38;margin:18px auto 0;max-width:980px;color:var(--soft)}.one-line{font-family:var(--story);font-size:clamp(42px,4.8vw,70px);line-height:1.22;margin:0;text-align:center;color:var(--green)}
+    .choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:34px auto 0;max-width:1050px}.choice{min-height:120px;border:4px solid var(--line);border-radius:28px;background:#fff;padding:18px;font-size:clamp(21px,2.2vw,32px);font-weight:900;cursor:pointer;box-shadow:0 10px 30px rgba(103,72,37,.08)}.choice:hover{transform:translateY(-3px);border-color:var(--gold2)}.choice.correct{border-color:#4b8e6c;background:#e9f9ef}.choice.wrong{border-color:#df8679;background:#fff0ec}.choice .emoji{display:block;font-size:clamp(44px,5vw,70px);margin-bottom:8px}
+    .feedback{min-height:42px;margin:22px auto 0;font-size:clamp(20px,2vw,28px);font-weight:800;text-align:center;color:var(--blue)}
+    .rule-row,.loop-row{display:flex;justify-content:center;align-items:center;gap:clamp(12px,2.2vw,28px);margin-top:36px;flex-wrap:wrap}.rule-pill,.loop-step{min-width:180px;padding:22px 24px;border:3px solid var(--line);border-radius:24px;background:#fff;text-align:center;font-size:clamp(22px,2vw,30px);font-weight:900}.rule-pill span,.loop-step span{display:block;font-size:46px;margin-bottom:8px}.arrow{font-size:38px;color:var(--gold);font-weight:900}
+    .tool-shell{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:18px}.tool-head{display:flex;align-items:center;gap:14px}.tool-head .mq{width:86px}.tool-head h2{font-size:clamp(30px,3vw,46px);margin:0;color:var(--green)}.tool-head p{font-size:19px;margin:2px 0 0;color:var(--soft)}
+    .trainer{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}.bucket{border:4px solid var(--line);border-radius:30px;background:#fff;padding:22px;display:grid;grid-template-rows:auto 1fr auto;text-align:center;min-height:260px}.bucket.sun{border-color:#efbd52;background:#fff9df}.bucket.forest{border-color:#69a77e;background:#edf9f0}.bucket h3{font-size:clamp(27px,2.8vw,40px);margin:0}.samples{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:10px;font-size:42px;min-height:80px}.tool-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.big-btn{min-height:58px;border:0;border-radius:18px;padding:13px 24px;background:var(--green);color:#fff;font-size:clamp(20px,2vw,28px);font-weight:900;cursor:pointer;box-shadow:0 9px 0 #173a2a}.big-btn:active{transform:translateY(5px);box-shadow:0 4px 0 #173a2a}.big-btn.gold{background:var(--gold2);color:#49300d;box-shadow:0 9px 0 #c18322}.big-btn.sky{background:#4d99c8;box-shadow:0 9px 0 #2e688d}.big-btn.light{background:#fff;color:var(--ink);border:3px solid var(--line);box-shadow:none}.trainer-status{grid-column:1/-1;text-align:center;font-size:clamp(20px,2vw,28px);font-weight:900;color:var(--blue);min-height:36px}
+    .sensor{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}.sensor-control{border:4px solid #b7d8eb;border-radius:30px;background:#fff;padding:28px}.sensor-control label{display:flex;justify-content:space-between;font-size:clamp(24px,2.3vw,34px);font-weight:900;margin-bottom:18px}.sensor-control input{width:100%;accent-color:var(--blue)}.signal{grid-column:1/-1;background:#d8e2e6;border-radius:99px;height:36px;overflow:hidden;border:4px solid #fff}.signal span{display:block;height:100%;width:70%;background:linear-gradient(90deg,#e7776b,#f0bd4f,#5aa879);transition:.2s}.signal-result{grid-column:1/-1;text-align:center;font-size:clamp(25px,2.6vw,38px);font-weight:900;color:var(--green)}
+    .external-tool{height:100%;display:grid;place-items:center;text-align:center}.external-tool h2{font-family:var(--story);font-size:clamp(52px,6vw,88px);margin:0;color:var(--green)}.external-tool p{font-size:clamp(22px,2.2vw,31px);color:var(--soft);margin:14px 0 26px}.external-tool .big-btn{font-size:clamp(26px,2.8vw,38px);padding:18px 34px;text-decoration:none}.fallback-link{display:block;margin:18px auto 0;border:0;background:transparent;color:var(--blue);font-weight:800;text-decoration:underline;cursor:pointer}
+    .doodle{width:min(900px,100%);height:min(52vh,460px);border:5px dashed #9ecce5;border-radius:28px;background:#fff;touch-action:none}.doodle-actions{display:flex;justify-content:center;gap:12px;margin-top:12px}.debug-card{width:min(900px,100%);margin:25px auto 0;border:4px solid var(--line);background:#fff;border-radius:32px;padding:clamp(24px,4vw,48px);text-align:center}.debug-card .case{font-size:clamp(58px,7vw,100px);margin-bottom:16px}.debug-card h3{font-size:clamp(27px,3vw,42px);margin:0}.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:30px}.compare-btn{min-height:240px;border:4px solid var(--line);border-radius:32px;background:#fff;padding:25px;cursor:pointer}.compare-btn b{display:block;font-size:clamp(30px,3.2vw,47px);color:var(--green)}.compare-btn span{display:block;font-size:clamp(19px,1.9vw,27px);color:var(--soft);margin-top:12px}
+    .teacher-panel{position:fixed;z-index:60;left:4vw;right:4vw;bottom:88px;max-height:46vh;overflow:auto;border:4px solid #d7a440;border-radius:26px;background:#fffdf8;padding:22px 26px;box-shadow:0 30px 80px rgba(54,35,16,.28)}.teacher-panel header{display:flex;justify-content:space-between;gap:14px;align-items:center}.teacher-panel h3{margin:0;color:var(--green)}.teacher-panel p{font-size:18px;line-height:1.6;margin:12px 0 0}.teacher-panel button{border:0;background:transparent;font-size:27px;cursor:pointer}
+    @keyframes float{50%{transform:translateY(-8px) rotate(1deg)}}@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+    @media(max-width:820px),(orientation:portrait){.chooser-main{grid-template-columns:1fr}.chooser-copy{text-align:center}.chooser-mq{display:none}.route{grid-template-columns:64px 1fr auto;padding:17px}.route-icon{width:60px;height:60px;font-size:34px}.deck{grid-template-rows:58px minmax(0,1fr) 68px}.deck-brand span{display:none}.slide{padding:24px 24px 28px}.scene{grid-template-columns:1fr;gap:12px;text-align:center}.mq{width:130px}.bubble::before{display:none}.bubble{font-size:clamp(28px,7vw,42px);padding:20px}.choices{grid-template-columns:1fr;gap:10px;margin-top:18px}.choice{min-height:74px}.choice .emoji{display:inline;margin:0 8px 0 0;font-size:32px}.trainer,.sensor,.compare-grid{grid-template-columns:1fr}.bucket{min-height:180px}.nav-btn{min-width:80px}.dots{display:none}.optional{display:none}.tool-head .mq{width:62px}.slide-count{font-size:14px}.doodle{height:42vh}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
-  <main class="shell">
-    <section class="launcher" id="launcher" aria-labelledby="pageTitle">
-      <div class="hero">
-        <div>
-          <div class="eyebrow">毛球与小驯养师 · 2026-07-15</div>
-          <h1 id="pageTitle">四节课，<br><span class="accent">压成一场 AI 实验。</span></h1>
-          <p class="lead">从“什么是 AI”一路走到“怎样训练和调试 AI”。同一套入口，按年龄切换节奏；平台停机也能完成整节课。</p>
-        </div>
-        <div class="orb" aria-label="毛球">☁️</div>
-      </div>
+  <!-- Original course mascot symbols, reused as an existing project asset. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <radialGradient id="mqBody" cx="0.35" cy="0.27" r="0.9"><stop offset="0" stop-color="#FFFAEF"/><stop offset="0.3" stop-color="#FFE0B0"/><stop offset="0.72" stop-color="#E89C50"/><stop offset="1" stop-color="#A45A1E"/></radialGradient>
+      <radialGradient id="mqLimb" cx="0.38" cy="0.3" r="0.95"><stop offset="0" stop-color="#FFE9C4"/><stop offset="0.7" stop-color="#EFA85C"/><stop offset="1" stop-color="#B06426"/></radialGradient>
+      <radialGradient id="mqEye" cx="0.38" cy="0.32" r="0.85"><stop offset="0" stop-color="#fff"/><stop offset="0.28" stop-color="#6EE7FF"/><stop offset="0.7" stop-color="#2A1B52"/><stop offset="1" stop-color="#120A2E"/></radialGradient>
+      <radialGradient id="mqGloss" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff" stop-opacity="0.92"/><stop offset="0.6" stop-color="#fff" stop-opacity="0.32"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+      <radialGradient id="mqBlush" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FF8A6B" stop-opacity="0.6"/><stop offset="1" stop-color="#FF8A6B" stop-opacity="0"/></radialGradient>
+      <linearGradient id="mqRim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFE6FF" stop-opacity="0.9"/><stop offset="0.7" stop-color="#CFE6FF" stop-opacity="0.1"/><stop offset="1" stop-color="#CFE6FF" stop-opacity="0"/></linearGradient>
+      <g id="mqBase"><ellipse cx="100" cy="184" rx="67" ry="11" fill="rgba(80,40,20,0.28)"/><ellipse cx="66" cy="176" rx="16" ry="10" fill="url(#mqLimb)"/><ellipse cx="134" cy="176" rx="16" ry="10" fill="url(#mqLimb)"/><ellipse cx="24" cy="124" rx="10" ry="13" fill="url(#mqLimb)" transform="rotate(14 24 124)"/><ellipse cx="176" cy="124" rx="10" ry="13" fill="url(#mqLimb)" transform="rotate(-14 176 124)"/><ellipse cx="100" cy="108" rx="80" ry="72" fill="url(#mqBody)" stroke="#5A2410" stroke-width="2.2" stroke-opacity=".42"/><path d="M24 110 A77 69 0 0 1 176 110" fill="none" stroke="url(#mqRim)" stroke-width="5" stroke-linecap="round"/><path d="M66 50 C56 18 80 14 84 34" fill="url(#mqBody)" stroke="#5A2410" stroke-width="2"/><path d="M134 50 C144 18 120 14 116 34" fill="url(#mqBody)" stroke="#5A2410" stroke-width="2"/><path d="M97 42 C92 22 102 10 110 16 C103 20 104 32 104 43Z" fill="url(#mqBody)" stroke="#5A2410" stroke-width="1.8"/><path d="M54 78 Q74 52 106 59 Q78 65 62 86Z" fill="url(#mqGloss)" opacity=".55"/><circle cx="132" cy="84" r="5" fill="#fff" opacity=".55"/></g>
+      <symbol id="mq-happy" viewBox="0 0 200 200"><use href="#mqBase"/><g opacity=".55"><ellipse cx="54" cy="122" rx="13" ry="8" fill="url(#mqBlush)"/><ellipse cx="146" cy="122" rx="13" ry="8" fill="url(#mqBlush)"/></g><ellipse cx="72" cy="104" rx="17" ry="17" fill="url(#mqEye)"/><circle cx="66.5" cy="97.8" r="5.1" fill="#fff"/><ellipse cx="128" cy="104" rx="17" ry="17" fill="url(#mqEye)"/><circle cx="122.5" cy="97.8" r="5.1" fill="#fff"/><path d="M82 135 Q100 151 118 135" fill="none" stroke="#5A2410" stroke-width="3.4" stroke-linecap="round"/></symbol>
+      <symbol id="mq-idle" viewBox="0 0 200 200"><use href="#mqBase"/><ellipse cx="72" cy="104" rx="15.6" ry="15.6" fill="url(#mqEye)"/><circle cx="67" cy="98.4" r="4.7" fill="#fff"/><ellipse cx="128" cy="104" rx="15.6" ry="15.6" fill="url(#mqEye)"/><circle cx="123" cy="98.4" r="4.7" fill="#fff"/><path d="M88 136 Q100 145 112 136" fill="none" stroke="#5A2410" stroke-width="3.2" stroke-linecap="round"/></symbol>
+      <symbol id="mq-excited" viewBox="0 0 200 200"><use href="#mqBase"/><ellipse cx="72" cy="104" rx="21" ry="21" fill="url(#mqEye)"/><circle cx="65.3" cy="96.4" r="6.3" fill="#fff"/><ellipse cx="128" cy="104" rx="21" ry="21" fill="url(#mqEye)"/><circle cx="121.3" cy="96.4" r="6.3" fill="#fff"/><path d="M85 133 Q100 127 115 133 Q117 150 100 153 Q83 150 85 133Z" fill="#7A2418" stroke="#5A2410" stroke-width="2.4"/><path d="M90 145 Q100 154 110 145 Q100 152 90 145Z" fill="#FF8A8A"/></symbol>
+    </defs>
+  </svg>
 
-      <div class="tracks" aria-label="选择课程路线">
-        <button class="track" type="button" data-track-select="young">
-          <strong>🌱 低龄优化版 · 6–8 岁</strong>
-          <span>故事、动作和短挑战为主。保留原课的安全感，减少讲解和设备切换。</span>
-        </button>
-        <button class="track" type="button" data-track-select="older">
-          <strong>🚀 明日推荐 · 三年级高阶版</strong>
-          <span>先直接建立毛球实模，再用观察、预测、对抗和调试把输入—数据—训练—测试闭环拆开。</span>
-        </button>
+  <main class="chooser" id="chooser">
+    <header class="chooser-top"><div class="mini-brand"><span class="mini-dot">✨</span>毛球与小驯养师</div><a class="quiet-link" href="full-course/">十课地图</a></header>
+    <section class="chooser-main">
+      <div class="chooser-copy">
+        <div class="eyebrow">选一条冒险路线</div>
+        <h1>今天，<br>把毛球教会。</h1>
+        <p>不是听讲座。孩子要亲手<strong>喂例子、考模型、找错误、再训练</strong>。</p>
+        <svg class="chooser-mq" viewBox="0 0 200 200" aria-label="开心的毛球"><use href="#mq-excited"/></svg>
       </div>
-
-      <div class="prep" aria-label="课程准备状态">
-        <span class="chip"><span class="dot"></span>单文件课件</span>
-        <span class="chip"><span class="dot"></span>无需 AI使魔平台</span>
-        <a class="chip" id="autodrawPrep" href="https://www.autodraw.com/" target="_blank" rel="noopener">AutoDraw ↗</a>
-        <a class="chip" id="quickdrawPrep" href="https://quickdraw.withgoogle.com/" target="_blank" rel="noopener">Quick, Draw! ↗</a>
-        <a class="chip" href="full-course/">十课互动版 ↗</a>
-        <button class="chip" id="soundCheck" type="button">🔊 播放本地测试音</button>
-        <span class="route-check" id="soundStatus" aria-live="polite">课程本身不依赖音频</span>
-        <span class="route-check" id="routeCheck">正在核对活动入口…</span>
+      <div class="route-list">
+        <button class="route recommended" id="startOlder" type="button"><span class="route-icon">🚀</span><span><b>三年级 · 60 分钟挑战</b><span>四节内容压成一次完整实模实验</span></span><span class="route-go">→</span></button>
+        <a class="route" href="full-course/"><span class="route-icon">🌱</span><span><b>一二年级 · 十课慢慢玩</b><span>保留毛球故事、问答和每课互动</span></span><span class="route-go">→</span></a>
       </div>
     </section>
-
-    <section class="deck" id="deck" hidden aria-label="毛球重构课演示">
-      <header class="topbar">
-        <div class="brand">
-          <div class="brand-mark" aria-hidden="true">☁️</div>
-          <div class="brand-copy"><strong id="trackTitle">毛球重构课</strong><span id="slideTitle">课程地图</span></div>
-        </div>
-        <div class="tools">
-          <button class="btn" type="button" id="timerBtn">⏱ <span class="timer" id="timer">60:00</span></button>
-          <button class="btn" type="button" id="notesBtn">🗒 <span class="optional">教师话术</span></button>
-          <button class="btn" type="button" id="fullBtn">⛶ <span class="optional">全屏</span></button>
-          <button class="btn" type="button" id="homeBtn">路线</button>
-        </div>
-      </header>
-
-      <div class="stage" id="stage">
-        <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
-
-        <article class="slide" data-track="young" data-tone="violet" data-title="毛球的问题" data-minute="0–6">
-          <div class="slide-grid">
-            <div>
-              <div class="kicker"><span class="time-pill">0–6 分钟</span> 唤醒问题</div>
-              <h2>毛球会学习，<br>但它<span class="accent">不是魔法。</span></h2>
-              <p class="statement">AI 是人做出来、会从例子里学习的电脑程序。它很会猜，也会猜错。</p>
-              <div class="cards">
-                <div class="card"><strong>先问孩子</strong><p>“你觉得毛球是活的吗？AI 是什么？”答案全部接住，先不判对错。</p></div>
-                <div class="card"><strong>去魅一句</strong><p>“毛球是 AI 穿的卡通外套，不是小动物，也不是住在 iPad 里的小人。”</p></div>
-              </div>
-            </div>
-            <div class="big-emoji" aria-hidden="true">☁️❓</div>
-          </div>
-          <aside class="teacher-note"><strong>照着说：</strong><p>“毛球今天想一次弄懂四个问题：我是什么？我怎么感觉世界？我怎么学习？我为什么会猜错？我们用一小时做四个实验帮它找到答案。”</p></aside>
-        </article>
-
-        <article class="slide" data-track="young" data-tone="cyan" data-title="乖乖机和聪聪机" data-minute="6–14">
-          <div>
-            <div class="kicker"><span class="time-pill">6–14 分钟</span> 动作游戏</div>
-            <h2>先照规则，再<span class="accent">看例子学。</span></h2>
-            <div class="cards">
-              <div class="card"><strong>🤖 乖乖机</strong><p>老师说“拍肩—举手—转身”，孩子必须一模一样执行。</p></div>
-              <div class="card"><strong>✨ 聪聪机</strong><p>第二组没有指令卡，只看第一组演两次，然后自己模仿。</p></div>
-            </div>
-            <p class="statement">谁更准？谁更灵活？聪聪机会不会猜错？</p>
-          </div>
-          <aside class="teacher-note"><strong>关键追问：</strong><p>给聪聪机一个从没见过的新动作。让孩子自己说出：“没见过，所以只好猜。”不要在这里讲算法。</p></aside>
-        </article>
-
-        <article class="slide" data-track="young" data-tone="mint" data-title="电脑的眼睛和耳朵" data-minute="14–22">
-          <div class="slide-grid">
-            <div>
-              <div class="kicker"><span class="time-pill">14–22 分钟</span> 感官实验</div>
-              <h2>摄像头是眼睛，<br>麦克风是耳朵。</h2>
-              <div class="steps">
-                <div class="step"><div class="num">1</div><div><strong>遮住摄像头</strong><p>画面变黑，不是电脑“睡着”，是它没有收到光。</p></div></div>
-                <div class="step"><div class="num">2</div><div><strong>安静说一句</strong><p>用听写把一句话变成字。</p></div></div>
-                <div class="step"><div class="num">3</div><div><strong>全班制造噪声</strong><p>再说同一句，看看哪里听错。</p></div></div>
-              </div>
-            </div>
-            <div class="big-emoji" aria-hidden="true">📷🎤</div>
-          </div>
-          <aside class="teacher-note"><strong>安全口令：</strong><p>“相机和麦克风要先问大人；不用的时候关掉。”只讨论权限和输入质量，不制造“设备一直偷看”的恐惧。</p></aside>
-        </article>
-
-        <article class="slide" data-track="young" data-tone="amber" data-title="AutoDraw 快速体验" data-minute="22–32">
-          <div class="slide-grid">
-            <div>
-              <div class="kicker"><span class="time-pill">22–32 分钟</span> 画一笔，AI 来补</div>
-              <h2>你画得再歪，<br>它也在<span class="accent">猜。</span></h2>
-              <div class="activity">
-                <h3>AutoDraw · 自由画</h3>
-                <p>每人只画一个“猫、鱼或自行车”。观察顶部建议：AI 猜中了什么？猜错了什么？</p>
-                <div class="activity-actions">
-                  <a class="btn primary activity-link" href="https://www.autodraw.com/" target="_blank" rel="noopener" data-route="autodraw">打开 AutoDraw ↗</a>
-                </div>
-                <div class="fallback"><b>断网替代：</b>直接用课件内三步猜图，不需要纸笔。 <button class="btn warn" type="button" data-local-lab="autodraw">开始三步猜图</button><span data-local-output></span></div>
-              </div>
-            </div>
-            <div class="big-emoji" aria-hidden="true">✏️✨</div>
-          </div>
-          <aside class="teacher-note"><strong>节奏：</strong><p>6 分钟操作，2 分钟展示，2 分钟追问。“它没见过你这幅画，为什么还能猜？”答案留到下一页。</p></aside>
-        </article>
-
-        <article class="slide" data-track="young" data-tone="cyan" data-title="Quick, Draw! 找规律" data-minute="32–43">
-          <div class="slide-grid">
-            <div>
-              <div class="kicker"><span class="time-pill">32–43 分钟</span> 20 秒挑战</div>
-              <h2>它不是帮你画，<br>而是<span class="accent">边看边猜。</span></h2>
-              <div class="activity">
-                <h3>Quick, Draw! · 一轮正常，一轮故意画怪</h3>
-                <p>第一轮照常画；第二轮故意改变形状。比较它什么时候开始认不出来。</p>
-                <div class="activity-actions">
-                  <a class="btn primary activity-link" href="https://quickdraw.withgoogle.com/" target="_blank" rel="noopener" data-route="quickdraw">打开 Quick, Draw! ↗</a>
-                </div>
-                <div class="fallback"><b>断网替代：</b>课件随机抽题并本地倒计时，不需要实体题卡。 <button class="btn warn" type="button" data-local-lab="quickdraw">抽题并开始 20 秒</button><span data-local-output></span></div>
-              </div>
-            </div>
-            <div class="big-emoji" aria-hidden="true">⏱️🖍️</div>
-          </div>
-          <aside class="teacher-note"><strong>核心句：</strong><p>“数据就是 AI 的练习题。练习题里没有的，它就容易认错。”让全班跟读一次即可。</p></aside>
-        </article>
-
-        <article class="slide" data-track="young" data-tone="mint" data-title="训练和测试" data-minute="43–54">
-          <div>
-            <div class="kicker"><span class="time-pill">43–54 分钟</span> 水果训练站</div>
-            <h2>喂例子 → 找规律 → <span class="accent">拿新题测试。</span></h2>
-            <div class="steps">
-              <div class="step"><div class="num">1</div><div><strong>训练</strong><p>老师快速展示苹果、香蕉、橙子；全班喊“水果”。</p></div></div>
-              <div class="step"><div class="num">2</div><div><strong>测试</strong><p>换成没出现过的榴莲或火龙果，先不公布答案。</p></div></div>
-              <div class="step"><div class="num">3</div><div><strong>喂错</strong><p>老师故意把一张胡萝卜说成水果，再问：学坏了吗？该怎么修？</p></div></div>
-            </div>
-            <div class="fallback"><b>可选老师投屏：</b>只有桌面设备已经真机验证过时，才用 Teachable Machine 演示；不要让全班 iPad 现场裸跑。</div>
-          </div>
-          <aside class="teacher-note"><strong>不要虚假宣称：</strong><p>若没有真的训练模型，就明确说这是“人来扮演训练流程”。教学目标是闭环，不是假装工具已经运行。</p></aside>
-        </article>
-
-        <article class="slide" data-track="young" data-tone="violet" data-title="小驯养师收尾" data-minute="54–60">
-          <div>
-            <div class="kicker"><span class="time-pill">54–60 分钟</span> 毛球复述</div>
-            <h2>四个动作，<span class="accent">一条 AI 链。</span></h2>
-            <div class="flow" aria-label="AI 学习链"><span class="node">👀 感觉</span><span class="arrow">→</span><span class="node">📚 例子</span><span class="arrow">→</span><span class="node">🧠 找规律</span><span class="arrow">→</span><span class="node">🎯 猜新题</span></div>
-            <p class="statement">AI 会猜错，所以重要的事要查一查、问大人；真名和住址不告诉 AI。</p>
-            <div class="activity-actions"><button class="btn warn" type="button" data-copy-prompt="毛球，请用一年级小朋友听得懂的话，问我三个问题，检查我是否明白 AI 怎样学习。每次只问一个。">复制毛球出口题</button></div>
-          </div>
-          <aside class="teacher-note"><strong>毛球可选：</strong><p>终端正常时用复制的问题让毛球逐题问；终端没开就由老师扮毛球。平台不是本课前置条件。</p></aside>
-        </article>
-
-        <article class="slide" data-track="older" data-order="1" data-tone="violet" data-title="先建一个实模" data-minute="0–5">
-          <div>
-            <div class="kicker"><span class="time-pill">0–5 分钟</span> 先上手，再解释</div>
-            <h2>今天先不听长课。<br>直接<span class="accent">训练一只毛球实模。</span></h2>
-            <div class="cards">
-              <div class="card"><strong>任务</strong><p>教毛球分清“太阳能量”和“森林能量”。</p></div>
-              <div class="card"><strong>规则</strong><p>先喂例子，再训练，最后必须拿没见过的新题测试。</p></div>
-            </div>
-          </div>
-          <aside class="teacher-note"><strong>开场只说：</strong><p>“你们今天不是来看 AI 的，是来把一只模型训练到能通过考试。先做，做完我们再把原理拆开。”</p></aside>
-        </article>
-
-        <article class="slide" data-track="older" data-order="3" data-tone="cyan" data-title="输入管线" data-minute="18–27">
-          <div>
-            <div class="kicker"><span class="time-pill">18–27 分钟</span> 控制变量</div>
-            <h2>先别怪模型，<br>检查<span class="accent">输入。</span></h2>
-            <div class="flow"><span class="node">摄像头／麦克风</span><span class="arrow">→</span><span class="node">数据</span><span class="arrow">→</span><span class="node">模型</span><span class="arrow">→</span><span class="node">结果</span></div>
-            <div class="cards">
-              <div class="card"><strong>实验 A</strong><p>正常光线 vs 遮住一半镜头。</p></div>
-              <div class="card"><strong>实验 B</strong><p>安静听写 vs 背景噪声听写。</p></div>
-            </div>
-            <p class="statement">同一个模型，输入变差，输出也会变差。</p>
-          </div>
-          <aside class="teacher-note"><strong>深化：</strong><p>让孩子指出“传感器、程序、模型”不是一回事。再问：如果相机权限没开，模型能不能靠想象看见？</p></aside>
-        </article>
-
-        <article class="slide" data-track="older" data-order="4" data-tone="amber" data-title="AutoDraw 观察实验" data-minute="27–36">
-          <div class="slide-grid">
-            <div>
-              <div class="kicker"><span class="time-pill">27–36 分钟</span> 实验一 · 建议</div>
-              <h2>AutoDraw：<br>从乱线中<span class="accent">推荐图标。</span></h2>
-              <div class="activity">
-                <p>先预测“画到第几笔它能猜到”，再分别画典型猫和奇怪猫。记录建议出现的时机。</p>
-                <div class="activity-actions"><a class="btn primary activity-link" href="https://www.autodraw.com/" target="_blank" rel="noopener" data-route="autodraw">打开 AutoDraw ↗</a></div>
-                <div class="fallback"><b>断网替代：</b>用课件内三步线索，记录自己第几步猜中。 <button class="btn warn" type="button" data-local-lab="autodraw">开始三步猜图</button><span data-local-output></span></div>
-              </div>
-            </div>
-            <div class="big-emoji" aria-hidden="true">✍️💡</div>
-          </div>
-          <aside class="teacher-note"><strong>观察表：</strong><p>典型画法／奇怪画法；第几笔出现正确建议；它是在生成你的线，还是用线匹配图库？答案：这里更像识别后推荐标准图标。</p></aside>
-        </article>
-
-        <article class="slide" data-track="older" data-order="5" data-tone="cyan" data-title="Quick, Draw! 对抗实验" data-minute="36–46">
-          <div class="slide-grid">
-            <div>
-              <div class="kicker"><span class="time-pill">36–46 分钟</span> 实验二 · 实时分类</div>
-              <h2>Quick, Draw!：<br>对抗<span class="accent">20 秒分类器。</span></h2>
-              <div class="activity">
-                <p>第一轮画最典型版本；第二轮保留含义但改变轮廓、方向或比例。先预测再验证。</p>
-                <div class="activity-actions"><a class="btn primary activity-link" href="https://quickdraw.withgoogle.com/" target="_blank" rel="noopener" data-route="quickdraw">打开 Quick, Draw! ↗</a></div>
-                <div class="fallback"><b>断网替代：</b>课件随机抽题并本地倒计时，比较典型画和变形画。 <button class="btn warn" type="button" data-local-lab="quickdraw">抽题并开始 20 秒</button><span data-local-output></span></div>
-              </div>
-            </div>
-            <div class="big-emoji" aria-hidden="true">⚡🖍️</div>
-          </div>
-          <aside class="teacher-note"><strong>明确区分：</strong><p>AutoDraw 是给你推荐标准图标；Quick, Draw! 是给题后实时猜类别。两个入口和任务都不同。</p></aside>
-        </article>
-
-        <article class="slide" data-track="older" data-order="6" data-tone="mint" data-title="数据调试" data-minute="46–55">
-          <div>
-            <div class="kicker"><span class="time-pill">46–55 分钟</span> 失败归因</div>
-            <h2>猜错不是一句“AI 笨”。<br>要找<span class="accent">哪一环坏了。</span></h2>
-            <div class="exit-grid">
-              <div class="exit"><b>输入问题</b><p>太暗、太吵、线条没画完。</p></div>
-              <div class="exit"><b>数据问题</b><p>训练样本太少、太像、缺少特殊情况。</p></div>
-              <div class="exit"><b>标签问题</b><p>把苹果错标成香蕉，模型会认真学错。</p></div>
-            </div>
-            <p class="statement">调试方案：补多样样本、删坏标签、重新训练，再拿没见过的新题测试。</p>
-          </div>
-          <aside class="teacher-note"><strong>挑战题：</strong><p>“只给模型看白猫，黑猫总被认成狗。你加 100 张白猫有用吗？”引出多样性比单纯数量更关键。</p></aside>
-        </article>
-
-        <article class="slide" data-track="older" data-order="2" data-tone="amber" data-title="毛球实模训练台" data-minute="5–18">
-          <div>
-            <div class="kicker"><span class="time-pill">5–18 分钟</span> 网页内训练</div>
-            <h2>喂例子、训练、<br><span class="accent">拿新题考试。</span></h2>
-            <div class="flow"><span class="node">收集两类例子</span><span class="arrow">→</span><span class="node">标标签</span><span class="arrow">→</span><span class="node">训练</span><span class="arrow">→</span><span class="node">新样本测试</span><span class="arrow">→</span><span class="node">修数据再训</span></div>
-            <div class="mini-trainer" aria-label="毛球实模训练模拟器">
-              <div class="train-bin"><b>☀️ 太阳能量</b><div class="train-samples" id="fastSunSamples"></div><button class="btn" id="fastAddSun" type="button">喂一个例子</button></div>
-              <div class="train-bin"><b>🌿 森林能量</b><div class="train-samples" id="fastLeafSamples"></div><button class="btn" id="fastAddLeaf" type="button">喂一个例子</button></div>
-              <div class="activity-actions"><button class="btn primary" id="fastTrain" type="button">训练毛球</button><button class="btn" id="fastTest" type="button" disabled>测试新能量球</button></div>
-              <div class="train-result" id="fastTrainStatus">两类各喂至少 2 个例子，才能训练。</div>
-            </div>
-          </div>
-          <aside class="teacher-note"><strong>关键：</strong><p>这是真正可点击的静态训练模拟器，不需要 AI使魔平台，也不会拍照或上传数据。训练成功后立刻问：“考试题能不能就是刚才喂过的题？”</p></aside>
-        </article>
-
-        <article class="slide" data-track="older" data-order="7" data-tone="violet" data-title="毛球产品挑战" data-minute="55–60">
-          <div>
-            <div class="kicker"><span class="time-pill">55–60 分钟</span> 出口任务</div>
-            <h2>你不是 AI 的观众。<br>你是<span class="accent">调试它的人。</span></h2>
-            <div class="exit-grid">
-              <div class="exit"><b>① 它怎样看见？</b><p>说出传感器和输入。</p></div>
-              <div class="exit"><b>② 它怎样学？</b><p>说出数据、规律、训练。</p></div>
-              <div class="exit"><b>③ 猜错怎么办？</b><p>判断输入、数据或标签，再测试修复。</p></div>
-            </div>
-            <div class="activity-actions"><button class="btn warn" type="button" data-copy-prompt="毛球，请扮演产品测试官，逐题给我三个 AI 失败案例，让我判断问题出在输入、数据还是标签。每次只给一个，等我回答后再点评。">复制毛球调试挑战</button></div>
-            <p class="lead" style="margin-top:18px">隐私守则：不用真名和住址；重要答案查证；AI 再像朋友，也没有感受和责任。</p>
-          </div>
-          <aside class="teacher-note"><strong>终端可选：</strong><p>毛球在线就用提示词；不在线由老师读三个案例。最后让每个孩子说一句“下次我要测试 AI 的……”作为收口。</p></aside>
-        </article>
-
-        <aside class="notes-panel" id="notesPanel" hidden aria-live="polite"><strong>教师话术</strong><p id="notesBody"></p></aside>
-      </div>
-
-      <footer class="bottombar">
-        <button class="btn" type="button" id="prevBtn">← 上一页</button>
-        <span class="slide-count" id="slideCount">1 / 7</span>
-        <button class="btn primary" type="button" id="nextBtn">下一页 →</button>
-      </footer>
-    </section>
+    <footer class="chooser-foot">Mac、PC、iPad 都可直接打开 · 核心实验不依赖 AI使魔平台</footer>
   </main>
 
-  <div class="sr-only" id="liveStatus" aria-live="polite"></div>
+  <section class="deck" id="deck" hidden aria-label="三年级毛球训练营幻灯课">
+    <header class="deck-top">
+      <div class="deck-brand"><span class="mini-dot">☀️</span><b>毛球训练营</b><span class="optional">· 三年级高阶版</span></div>
+      <div class="top-actions"><span class="lesson-time" id="lessonTime">0–2 分钟</span><button class="icon-btn" id="teacherBtn" type="button">🗒 <span class="optional">教师</span></button><button class="icon-btn" id="fullBtn" type="button">⛶</button><button class="icon-btn" id="homeBtn" type="button">⌂</button></div>
+    </header>
+    <div class="stage" id="stage" aria-live="polite"></div>
+    <footer class="deck-bottom"><div class="nav-actions"><button class="nav-btn" id="prevBtn" type="button">← 上一页</button></div><div class="dots" id="dots" aria-label="幻灯进度"></div><span class="slide-count" id="slideCount">1 / 16</span><div class="nav-actions"><button class="nav-btn primary" id="nextBtn" type="button">下一页 →</button></div></footer>
+  </section>
+  <aside class="teacher-panel" id="teacherPanel" hidden><header><h3>教师提词 · 仅老师可见</h3><button id="closeTeacher" type="button" aria-label="关闭">×</button></header><p id="teacherText"></p></aside>
 
   <script>
-    (() => {
-      const launcher = document.getElementById('launcher');
-      const deck = document.getElementById('deck');
-      const stage = document.getElementById('stage');
-      const progressBar = document.getElementById('progressBar');
-      const slideCount = document.getElementById('slideCount');
-      const slideTitle = document.getElementById('slideTitle');
-      const trackTitle = document.getElementById('trackTitle');
-      const notesPanel = document.getElementById('notesPanel');
-      const notesBody = document.getElementById('notesBody');
-      const liveStatus = document.getElementById('liveStatus');
-      const timerEl = document.getElementById('timer');
-      let track = null;
-      let visibleSlides = [];
-      let index = 0;
-      let notesOpen = false;
-      let remaining = 60 * 60;
-      let timerRunning = false;
-      let timerHandle = null;
+  (()=>{
+    const $=id=>document.getElementById(id);
+    const mq=face=>`<svg class="mq ${face==='sidekick'?'sidekick':''}" viewBox="0 0 200 200" aria-label="毛球"><use href="#mq-${face==='sidekick'?'idle':face}"/></svg>`;
+    const slides=[
+      {id:'h01',type:'cover',tone:'yellow',time:'0–2 分钟',title:'毛球总是认错！',sub:'60 分钟，把它训练到过关。',face:'excited',note:'照念：毛球今天总把能量球认错。我们不是来听答案，而是要把它真的教会。追问：你觉得训练 AI 的第一步是什么？'},
+      {id:'h02',type:'question',tone:'cream',time:'2–4 分钟',prompt:'训练毛球，先做哪一步？',choices:[['☀️','只喂太阳','wrong'],['☀️🌿','两类都喂','correct'],['📝','直接考试','wrong']],answer:'两类都要有例子，毛球才有东西可以比较。',face:'idle',note:'先让孩子站队，不要提前揭晓。选完才点答案。追问：如果只见过太阳，它怎么知道森林是什么？'},
+      {id:'h03',type:'rules',tone:'mint',time:'4–5 分钟',title:'今天只过三关',items:[['☀️🌿','分清两类'],['🆕','用新题考'],['🛡️','不用真人资料']],face:'happy',note:'成功标准：不是答对一次，而是用没见过的新题连续通过。红线：不上传孩子姓名、照片、地址。'},
+      {id:'h04',type:'trainer',tone:'yellow',time:'5–17 分钟',title:'毛球实模训练台',face:'idle',note:'让孩子轮流点击喂例子。每类至少两个，先训练，再测试。故意让第一次训练不完美，错误是本课的重要产物。'},
+      {id:'h05',type:'question',tone:'pink',time:'17–20 分钟',prompt:'答对一次，就真的会了吗？',choices:[['🎉','会了！','wrong'],['🧪','还要新题','correct'],['🔁','把旧题再考一次','wrong']],answer:'考试要用毛球没见过的新题。',face:'idle',note:'要求孩子指出哪颗球从没进过训练集。把“训练题”和“考试题”分开。'},
+      {id:'h06',type:'loop',tone:'cream',time:'20–23 分钟',title:'真正的训练循环',items:[['🍎','例子＋标签'],['⚙️','训练'],['🆕','新题测试'],['🔧','修好再训']],face:'happy',note:'全班一起读四个动词：喂、训、考、修。不要解释算法。'},
+      {id:'h07',type:'question',tone:'sky',time:'23–24 分钟',prompt:'毛球忽然变笨，先查哪里？',choices:[['🌑','太暗了','correct'],['🔊','太吵了','correct'],['😤','它偷懒','wrong']],answer:'先检查它看见、听见了什么。',face:'idle',note:'这里允许两个正确答案。点太暗、太吵都算对；“偷懒”用于去人格化。'},
+      {id:'h08',type:'sensor',tone:'sky',time:'24–29 分钟',title:'输入信号实验台',face:'idle',note:'一次只拖一个滑杆。先把光线拉低，再恢复；再把噪声拉高。让孩子用“因为输入……”解释变化。'},
+      {id:'h09',type:'question',tone:'mint',time:'29–31 分钟',prompt:'模型没换，分数为什么掉了？',choices:[['📷🎤','输入变差','correct'],['🧠','知识消失','wrong'],['🎲','纯粹运气','wrong']],answer:'输入先坏了，结果也会跟着坏。',face:'happy',note:'把失败归因分层：先查输入，再查数据和标签，最后才查模型。'},
+      {id:'h10',type:'question',tone:'peach',time:'31–32 分钟',prompt:'AutoDraw 第几笔会猜中？',choices:[['1️⃣','第一笔','guess'],['3️⃣','第三笔','guess'],['6️⃣','第六笔','guess']],answer:'先押一个数，再去实验！',face:'excited',note:'这一页没有标准答案。让每个孩子先押一个数字，再打开工具，用真实结果验证。'},
+      {id:'h11',type:'external',tone:'peach',time:'32–38 分钟',title:'AutoDraw',sub:'画几笔，看它推荐什么。',url:'https://www.autodraw.com/',button:'打开 AutoDraw ↗',fallback:'autodraw',face:'happy',note:'每人只画猫、鱼或自行车之一。回来后只问：第几笔出现了正确建议？断网则点本地猜图。'},
+      {id:'h12',type:'question',tone:'sky',time:'38–40 分钟',prompt:'改变轮廓，它还认得吗？',choices:[['✅','一定认得','guess'],['❌','一定认不得','guess'],['🧪','画了才知道','correct']],answer:'保留意思，故意换一种画法。',face:'idle',note:'先画典型版本，再画夸张/变形版本。强调这是测试模型见没见过这种变化。'},
+      {id:'h13',type:'external',tone:'sky',time:'40–47 分钟',title:'Quick, Draw!',sub:'一轮典型，一轮变形。',url:'https://quickdraw.withgoogle.com/',button:'打开 Quick, Draw! ↗',fallback:'quickdraw',face:'excited',note:'AutoDraw 和 Quick Draw 必须是两个不同入口。第一轮正常画，第二轮保留意思但改变轮廓。断网使用本地限时猜图。'},
+      {id:'h14',type:'compare',tone:'cream',time:'47–50 分钟',title:'它们在做同一件事吗？',face:'idle',note:'答案：AutoDraw 根据草图推荐标准图标；Quick Draw 直接猜类别。让孩子先选再揭晓。'},
+      {id:'h15',type:'debug',tone:'mint',time:'50–57 分钟',title:'三案调试局',face:'idle',note:'三案逐个出现：暗光听错=输入；只见白猫=数据；苹果标香蕉=标签。每案都必须问“怎么修、用什么新题重测？”'},
+      {id:'h16',type:'finish',tone:'yellow',time:'57–60 分钟',title:'真正的驯养师',sub:'会检查、会修好、会再测。',face:'excited',note:'出口句每人补一句：下次 AI 出错，我会先检查____。最后强调：毛球不是魔法，也不是永远正确的权威。'}
+    ];
+    const state={index:0,sun:0,forest:0,trained:false,tested:0,debug:0};
 
-      const titles = { young:'低龄优化版 · 6–8 岁', older:'高龄加速版 · 9 岁+' };
+    function scene(prompt,face='idle'){return `<div class="scene"><div class="mq-wrap">${mq(face)}</div><div class="bubble">${prompt}</div></div>`}
+    function choices(items,answer){return `<div class="choices">${items.map(([emoji,label,result])=>`<button class="choice" type="button" data-result="${result}"><span class="emoji">${emoji}</span>${label}</button>`).join('')}</div><div class="feedback" id="feedback">先选，再揭晓。</div><template id="answerText">${answer}</template>`}
+    function toolHead(title,face='idle',sub='动手试一试'){return `<div class="tool-head">${mq('sidekick')}<div><h2>${title}</h2><p>${sub}</p></div></div>`}
 
-      function formatTime(seconds) {
-        const min = Math.floor(seconds / 60);
-        const sec = seconds % 60;
-        return `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-      }
+    function render(){const s=slides[state.index];$('lessonTime').textContent=s.time;$('slideCount').textContent=`${state.index+1} / ${slides.length}`;$('teacherText').textContent=s.note;$('prevBtn').disabled=state.index===0;$('nextBtn').textContent=state.index===slides.length-1?'回到入口':'下一页 →';$('stage').innerHTML=`<article class="slide tone-${s.tone}"><div class="slide-inner">${renderType(s)}</div></article>`;renderDots();bindSlide(s)}
+    function renderType(s){
+      if(s.type==='cover'||s.type==='finish')return `<div class="center">${mq(s.face)}<div class="eyebrow">${s.type==='cover'?'三年级 · 一小时高阶版':'训练完成 · TRAIN'}</div><h1 class="big-title">${s.title}</h1><p class="subline">${s.sub}</p></div>`;
+      if(s.type==='question')return `${scene(s.prompt,s.face)}${choices(s.choices,s.answer)}`;
+      if(s.type==='rules')return `<div class="center">${mq('sidekick')}<h2 class="one-line">${s.title}</h2><div class="rule-row">${s.items.map(x=>`<div class="rule-pill"><span>${x[0]}</span>${x[1]}</div>`).join('')}</div></div>`;
+      if(s.type==='loop')return `<div class="center"><h2 class="one-line">${s.title}</h2><div class="loop-row">${s.items.map((x,i)=>`${i?'<span class="arrow">→</span>':''}<div class="loop-step"><span>${x[0]}</span>${x[1]}</div>`).join('')}</div>${mq('sidekick')}</div>`;
+      if(s.type==='trainer')return `<div class="tool-shell">${toolHead(s.title,'idle','喂例子 → 训练 → 用新题考试')}<div class="trainer"><section class="bucket sun"><h3>☀️ 太阳能量</h3><div class="samples" id="sunSamples"></div><button class="big-btn gold" id="addSun" type="button">＋ 喂一个例子</button></section><section class="bucket forest"><h3>🌿 森林能量</h3><div class="samples" id="forestSamples"></div><button class="big-btn" id="addForest" type="button">＋ 喂一个例子</button></section><div class="tool-actions"><button class="big-btn sky" id="trainModel" type="button">⚙️ 训练毛球</button><button class="big-btn light" id="testModel" type="button">🆕 新题考试</button></div><div class="trainer-status" id="trainerStatus"></div></div></div>`;
+      if(s.type==='sensor')return `<div class="tool-shell">${toolHead(s.title,'idle','一次只改变一个条件')}<div class="sensor"><section class="sensor-control"><label>☀️ 光线 <output id="lightOut">75</output></label><input id="light" type="range" min="0" max="100" value="75"></section><section class="sensor-control"><label>🔊 噪声 <output id="noiseOut">20</output></label><input id="noise" type="range" min="0" max="100" value="20"></section><div class="signal"><span id="signalBar"></span></div><div class="signal-result" id="signalResult"></div></div></div>`;
+      if(s.type==='external')return `<div class="external-tool" id="externalTool"><div>${mq(s.face)}<h2>${s.title}</h2><p>${s.sub}</p><a class="big-btn" href="${s.url}" target="_blank" rel="noopener">${s.button}</a><button class="fallback-link" type="button" id="fallbackBtn">没网络？打开本地猜图</button></div></div>`;
+      if(s.type==='compare')return `<div class="center"><h2 class="one-line">${s.title}</h2><div class="compare-grid"><button class="compare-btn" type="button" data-compare="auto"><b>AutoDraw</b><span>推荐标准图标</span></button><button class="compare-btn" type="button" data-compare="quick"><b>Quick, Draw!</b><span>猜你的类别</span></button></div><div class="feedback" id="feedback">点一张，听毛球怎么说。</div></div>`;
+      if(s.type==='debug')return `<div class="center"><h2 class="one-line">${s.title}</h2><div class="debug-card" id="debugCard"></div></div>`;
+      return '';
+    }
 
-      function render() {
-        visibleSlides.forEach((slide, n) => slide.classList.toggle('active', n === index));
-        const current = visibleSlides[index];
-        if (!current) return;
-        slideCount.textContent = `${index + 1} / ${visibleSlides.length}`;
-        slideTitle.textContent = `${current.dataset.minute} · ${current.dataset.title}`;
-        progressBar.style.width = `${((index + 1) / visibleSlides.length) * 100}%`;
-        const note = current.querySelector('.teacher-note');
-        notesBody.innerHTML = note ? note.innerHTML.replace(/^<strong>.*?<\/strong>/,'') : '本页无额外提示。';
-        notesPanel.querySelector('strong').textContent = note?.querySelector('strong')?.textContent || '教师话术';
-        liveStatus.textContent = `第 ${index + 1} 页，共 ${visibleSlides.length} 页：${current.dataset.title}`;
-        document.getElementById('prevBtn').disabled = index === 0;
-        document.getElementById('nextBtn').textContent = index === visibleSlides.length - 1 ? '回到路线' : '下一页 →';
-      }
-
-      function chooseTrack(selected) {
-        track = selected;
-        index = 0;
-        visibleSlides = [...stage.querySelectorAll(`.slide[data-track="${selected}"]`)]
-          .sort((a,b) => Number(a.dataset.order || 0) - Number(b.dataset.order || 0));
-        trackTitle.textContent = titles[selected];
-        launcher.hidden = true;
-        deck.hidden = false;
-        notesPanel.hidden = true;
-        notesOpen = false;
-        render();
-      }
-
-      function go(delta) {
-        if (index === visibleSlides.length - 1 && delta > 0) return home();
-        index = Math.max(0, Math.min(visibleSlides.length - 1, index + delta));
-        render();
-      }
-
-      function home() {
-        deck.hidden = true;
-        launcher.hidden = false;
-        notesPanel.hidden = true;
-        notesOpen = false;
-      }
-
-      function toggleNotes() {
-        notesOpen = !notesOpen;
-        notesPanel.hidden = !notesOpen;
-        document.getElementById('notesBtn').setAttribute('aria-pressed', String(notesOpen));
-      }
-
-      function toggleTimer() {
-        timerRunning = !timerRunning;
-        if (timerRunning) {
-          timerHandle = window.setInterval(() => {
-            remaining = Math.max(0, remaining - 1);
-            timerEl.textContent = formatTime(remaining);
-            if (!remaining) { clearInterval(timerHandle); timerRunning = false; }
-          }, 1000);
-        } else {
-          clearInterval(timerHandle);
-        }
-      }
-
-      async function copyPrompt(button) {
-        const text = button.dataset.copyPrompt;
-        try {
-          await navigator.clipboard.writeText(text);
-          button.textContent = '已复制 ✓';
-          window.setTimeout(() => button.textContent = '复制毛球挑战', 1800);
-        } catch {
-          window.prompt('复制下面的毛球提示词：', text);
-        }
-      }
-
-      function validateRoutes() {
-        const auto = new URL(document.getElementById('autodrawPrep').href);
-        const quick = new URL(document.getElementById('quickdrawPrep').href);
-        const autoLinks = [...document.querySelectorAll('[data-route="autodraw"]')];
-        const quickLinks = [...document.querySelectorAll('[data-route="quickdraw"]')];
-        const valid = auto.hostname === 'www.autodraw.com' && quick.hostname === 'quickdraw.withgoogle.com' &&
-          autoLinks.every(link => new URL(link.href).hostname === auto.hostname) &&
-          quickLinks.every(link => new URL(link.href).hostname === quick.hostname) && auto.hostname !== quick.hostname;
-        const output = document.getElementById('routeCheck');
-        output.className = `route-check ${valid ? 'ok' : 'bad'}`;
-        output.textContent = valid ? '✓ 两个活动入口已分离' : '⚠ 活动入口校验失败';
-      }
-
-      async function testAudio() {
-        const output = document.getElementById('soundStatus');
-        const AudioEngine = window.AudioContext || window.webkitAudioContext;
-        if (!AudioEngine) {
-          output.textContent = '⚠ 当前浏览器不支持本地测试音';
-          output.className = 'route-check bad';
-          return;
-        }
-        try {
-          const context = new AudioEngine();
-          await context.resume();
-          const oscillator = context.createOscillator();
-          const gain = context.createGain();
-          oscillator.frequency.value = 523.25;
-          gain.gain.setValueAtTime(.0001, context.currentTime);
-          gain.gain.exponentialRampToValueAtTime(.18, context.currentTime + .02);
-          gain.gain.exponentialRampToValueAtTime(.0001, context.currentTime + .28);
-          oscillator.connect(gain).connect(context.destination);
-          oscillator.start();
-          oscillator.stop(context.currentTime + .3);
-          oscillator.addEventListener('ended', () => context.close());
-          output.textContent = '✓ 若听到短音，扬声器正常';
-          output.className = 'route-check ok';
-        } catch {
-          output.textContent = '⚠ 请检查静音键和系统音量';
-          output.className = 'route-check bad';
-        }
-      }
-
-      let fastSun = 0;
-      let fastLeaf = 0;
-      let fastTrained = false;
-      function renderFastTrainer() {
-        document.getElementById('fastSunSamples').textContent = '☀️'.repeat(fastSun);
-        document.getElementById('fastLeafSamples').textContent = '🌿'.repeat(fastLeaf);
-      }
-      function addFastSample(kind) {
-        if (kind === 'sun') fastSun = Math.min(6, fastSun + 1);
-        else fastLeaf = Math.min(6, fastLeaf + 1);
-        fastTrained = false;
-        document.getElementById('fastTest').disabled = true;
-        document.getElementById('fastTrainStatus').textContent = `太阳 ${fastSun} 个，森林 ${fastLeaf} 个。数据改变后要重新训练。`;
-        renderFastTrainer();
-      }
-      function trainFastModel() {
-        const output = document.getElementById('fastTrainStatus');
-        if (fastSun < 2 || fastLeaf < 2) {
-          output.textContent = '每一类至少需要 2 个例子；不能只教一边。';
-          return;
-        }
-        fastTrained = true;
-        document.getElementById('fastTest').disabled = false;
-        output.textContent = '训练完成 ✓ 现在拿一颗从没见过的新能量球考试。';
-      }
-      function testFastModel() {
-        if (!fastTrained) return;
-        const balanced = Math.abs(fastSun - fastLeaf) <= 2;
-        const target = Math.random() > .5 ? '太阳能量 🌤️' : '森林能量 🍃';
-        document.getElementById('fastTrainStatus').textContent = balanced ? `模型预测：${target}。下一步故意少喂一类，观察它怎样偏。` : '模型犹豫：两类训练量差太大。给较少的一类补例子，再训练。';
-      }
-
-      function startLocalLab(button) {
-        const output = button.closest('.fallback').querySelector('[data-local-output]');
-        if (button.dataset.localLab === 'autodraw') {
-          const hints = ['① 先出现一个圆：你猜是什么？', '② 圆上多了两个尖耳朵：改答案吗？', '③ 加上眼睛和胡须：答案是猫。你第几步猜中？'];
-          const step = Number(button.dataset.step || 0) % hints.length;
-          output.textContent = ` ${hints[step]}`;
-          button.dataset.step = String(step + 1);
-          button.textContent = step === hints.length - 1 ? '重新开始' : '显示下一步';
-          return;
-        }
-        const topics = ['猫', '雨伞', '自行车', '鱼', '闹钟', '树'];
-        const topic = topics[Math.floor(Math.random() * topics.length)];
-        let seconds = 20;
-        clearInterval(button._timer);
-        output.textContent = ` 题目：${topic} · ${seconds} 秒`;
-        button._timer = setInterval(() => {
-          seconds -= 1;
-          output.textContent = ` 题目：${topic} · ${seconds} 秒`;
-          if (!seconds) {
-            clearInterval(button._timer);
-            output.textContent = ` 时间到！展示“${topic}”，让同伴猜。`;
-          }
-        }, 1000);
-      }
-
-      document.querySelectorAll('[data-track-select]').forEach(button => button.addEventListener('click', () => chooseTrack(button.dataset.trackSelect)));
-      document.getElementById('prevBtn').addEventListener('click', () => go(-1));
-      document.getElementById('nextBtn').addEventListener('click', () => go(1));
-      document.getElementById('homeBtn').addEventListener('click', home);
-      document.getElementById('notesBtn').addEventListener('click', toggleNotes);
-      document.getElementById('timerBtn').addEventListener('click', toggleTimer);
-      document.getElementById('soundCheck').addEventListener('click', testAudio);
-      document.getElementById('fastAddSun').addEventListener('click', () => addFastSample('sun'));
-      document.getElementById('fastAddLeaf').addEventListener('click', () => addFastSample('leaf'));
-      document.getElementById('fastTrain').addEventListener('click', trainFastModel);
-      document.getElementById('fastTest').addEventListener('click', testFastModel);
-      document.querySelectorAll('[data-local-lab]').forEach(button => button.addEventListener('click', () => startLocalLab(button)));
-      document.getElementById('fullBtn').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen?.() : document.documentElement.requestFullscreen?.());
-      document.querySelectorAll('[data-copy-prompt]').forEach(button => button.addEventListener('click', () => copyPrompt(button)));
-      document.querySelectorAll('.activity-link').forEach(link => link.addEventListener('click', event => event.stopPropagation()));
-
-      document.addEventListener('keydown', event => {
-        if (deck.hidden) return;
-        if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); go(1); }
-        if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); go(-1); }
-        if (event.key.toLowerCase() === 't') toggleNotes();
-        if (event.key.toLowerCase() === 'f') document.getElementById('fullBtn').click();
-        if (event.key === 'Escape' && notesOpen) toggleNotes();
-      });
-
-      let touchX = null;
-      stage.addEventListener('touchstart', event => { touchX = event.changedTouches[0]?.screenX ?? null; }, {passive:true});
-      stage.addEventListener('touchend', event => {
-        if (touchX === null) return;
-        const delta = (event.changedTouches[0]?.screenX ?? touchX) - touchX;
-        if (Math.abs(delta) > 65) go(delta < 0 ? 1 : -1);
-        touchX = null;
-      }, {passive:true});
-
-      validateRoutes();
-      renderFastTrainer();
-    })();
+    function bindSlide(s){
+      if(s.type==='question')$('stage').querySelectorAll('[data-result]').forEach(btn=>btn.onclick=()=>{const result=btn.dataset.result;const all=$('stage').querySelectorAll('[data-result]');if(result!=='guess'){all.forEach(x=>x.classList.remove('correct','wrong'));btn.classList.add(result==='correct'?'correct':'wrong')}const msg=result==='correct'||result==='guess'?$('answerText').content.textContent:'毛球挠挠头：再想想训练和考试有什么不同？';$('feedback').textContent=msg});
+      if(s.type==='trainer')bindTrainer();
+      if(s.type==='sensor')bindSensor();
+      if(s.type==='external')$('fallbackBtn').onclick=()=>renderDoodle(s.fallback);
+      if(s.type==='compare')$('stage').querySelectorAll('[data-compare]').forEach(b=>b.onclick=()=>{$('feedback').textContent=b.dataset.compare==='auto'?'AutoDraw：我在推荐一个更标准的图标。':'Quick, Draw!：我在猜你画的是什么类别。';b.classList.add('correct')});
+      if(s.type==='debug')renderDebug();
+    }
+    function bindTrainer(){
+      const draw=()=>{$('sunSamples').textContent='☀️'.repeat(state.sun);$('forestSamples').textContent='🌿'.repeat(state.forest)};
+      $('addSun').onclick=()=>{state.sun=Math.min(6,state.sun+1);state.trained=false;draw();$('trainerStatus').textContent=`太阳 ${state.sun} 个 · 森林 ${state.forest} 个`};
+      $('addForest').onclick=()=>{state.forest=Math.min(6,state.forest+1);state.trained=false;draw();$('trainerStatus').textContent=`太阳 ${state.sun} 个 · 森林 ${state.forest} 个`};
+      $('trainModel').onclick=()=>{if(state.sun<2||state.forest<2){$('trainerStatus').textContent='两边都至少喂 2 个例子。';return}state.trained=true;$('trainerStatus').textContent='训练完成！现在用新题考试。'};
+      $('testModel').onclick=()=>{if(!state.trained){$('trainerStatus').textContent='还没训练，毛球只能乱猜。';return}state.tested++;const balanced=Math.abs(state.sun-state.forest)<=2;$('trainerStatus').textContent=balanced?`第 ${state.tested} 个新题：毛球答对了！还要继续测。`:'毛球犹豫了：两类例子太不平衡。'};draw();$('trainerStatus').textContent=state.sun+state.forest?`太阳 ${state.sun} 个 · 森林 ${state.forest} 个`:'先给两边都喂例子。';
+    }
+    function bindSensor(){const update=()=>{const light=+$('light').value,noise=+$('noise').value,score=Math.max(2,Math.round(light*.7+(100-noise)*.3));$('lightOut').textContent=light;$('noiseOut').textContent=noise;$('signalBar').style.width=`${score}%`;$('signalResult').textContent=score>70?'输入很清楚，毛球有把握。':score>40?'毛球有点犹豫……':'看不清、听不清，先修输入！'};$('light').oninput=update;$('noise').oninput=update;update()}
+    function renderDoodle(kind){$('externalTool').innerHTML=`<div><h2>${kind==='autodraw'?'本地猜图':'本地限时画'}</h2><canvas class="doodle" id="doodle" width="900" height="450" aria-label="画板"></canvas><div class="doodle-actions"><button class="big-btn light" id="clearDoodle" type="button">清空</button><button class="big-btn" id="guessDoodle" type="button">毛球来猜</button></div><div class="feedback" id="feedback">用手指或鼠标画一画。</div></div>`;const c=$('doodle'),ctx=c.getContext('2d');ctx.lineWidth=10;ctx.lineCap='round';ctx.strokeStyle='#2a6a9e';let drawing=false,strokes=0;const point=e=>{const r=c.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return[(p.clientX-r.left)*c.width/r.width,(p.clientY-r.top)*c.height/r.height]};const start=e=>{drawing=true;strokes++;ctx.beginPath();ctx.moveTo(...point(e));e.preventDefault()};const move=e=>{if(!drawing)return;ctx.lineTo(...point(e));ctx.stroke();e.preventDefault()};const end=()=>drawing=false;c.addEventListener('pointerdown',start);c.addEventListener('pointermove',move);addEventListener('pointerup',end);$('clearDoodle').onclick=()=>{ctx.clearRect(0,0,c.width,c.height);strokes=0;$('feedback').textContent='重新画一画。'};$('guessDoodle').onclick=()=>{$('feedback').textContent=strokes<3?'毛球猜：太阳？再多画几笔让我看清。':strokes<7?'毛球猜：猫或鱼？我还不太确定。':'毛球猜了一个答案——但自信不代表正确！'}}
+    function renderDebug(){const cases=[{icon:'🌑📷',q:'画面太暗，错在哪？',a:'input',label:'输入',fix:'先把光线调好，再测。'},{icon:'🐈🐈🐈',q:'只见过白猫，错在哪？',a:'data',label:'数据',fix:'补黑猫、侧脸猫等新例子。'},{icon:'🍎➡️🍌',q:'苹果标成香蕉，错在哪？',a:'label',label:'标签',fix:'改正标签，重新训练。'}],item=cases[state.debug%cases.length];$('debugCard').innerHTML=`<div class="case">${item.icon}</div><h3>${item.q}</h3><div class="choices"><button class="choice" data-debug="input">输入</button><button class="choice" data-debug="data">数据</button><button class="choice" data-debug="label">标签</button></div><div class="feedback" id="feedback">先判断，再修。</div>`;$('debugCard').querySelectorAll('[data-debug]').forEach(b=>b.onclick=()=>{if(b.dataset.debug===item.a){b.classList.add('correct');$('feedback').textContent=`答对：${item.fix}`;setTimeout(()=>{state.debug++;renderDebug()},900)}else{b.classList.add('wrong');$('feedback').textContent='再看一眼：问题发生在哪一层？'}})}
+    function renderDots(){$('dots').innerHTML=slides.map((_,i)=>`<button class="dot ${i<state.index?'done':''} ${i===state.index?'active':''}" type="button" data-go="${i}" aria-label="第 ${i+1} 页"></button>`).join('');$('dots').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{state.index=+b.dataset.go;render()})}
+    function start(){state.index=0;$('chooser').hidden=true;$('deck').hidden=false;render()}
+    function home(){$('deck').hidden=true;$('chooser').hidden=false;$('teacherPanel').hidden=true}
+    $('startOlder').onclick=start;$('prevBtn').onclick=()=>{if(state.index>0){state.index--;render()}};$('nextBtn').onclick=()=>{if(state.index===slides.length-1)return home();state.index++;render()};$('homeBtn').onclick=home;$('teacherBtn').onclick=()=>{$('teacherPanel').hidden=!$('teacherPanel').hidden};$('closeTeacher').onclick=()=>$('teacherPanel').hidden=true;$('fullBtn').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.();
+    addEventListener('keydown',e=>{if($('deck').hidden)return;if(e.key==='ArrowRight'){e.preventDefault();$('nextBtn').click()}if(e.key==='ArrowLeft'){e.preventDefault();$('prevBtn').click()}if(e.key.toLowerCase()==='s')$('teacherBtn').click();if(e.key==='Escape')$('teacherPanel').hidden=true});
+    let x=0;$('stage').addEventListener('touchstart',e=>x=e.changedTouches[0].clientX,{passive:true});$('stage').addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-x;if(Math.abs(d)>70)(d<0?$('nextBtn'):$('prevBtn')).click()},{passive:true});
+  })();
   </script>
 </body>
 </html>
