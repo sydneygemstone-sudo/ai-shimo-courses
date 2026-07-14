@@ -51,7 +51,15 @@ for (const id of ['rehearsalBtn','teacherSay','teacherDo','teacherBridge']) {
   assert(full.includes(`id="${id}"`), `full-course: teacher rehearsal control missing ${id}`);
 }
 assert(full.includes("query.get('teacher')==='1'"), 'full-course: direct teacher rehearsal route missing');
-assert(full.includes('mislabelBtn') && full.includes('fixLabelBtn'), 'full-course: trainer must demonstrate failure and label repair');
+assert(full.includes("title:'教毛球认猫狗'") && full.includes("toolTitle:'毛球认猫狗小游戏'"), 'full-course: lesson 4 cat/dog story missing');
+for (const id of ['catSamples','dogSamples','trainerSteps','trainerNext','trainerFeedback']) {
+  assert(full.includes(`id="${id}"`), `full-course: lesson 4 guided interaction missing ${id}`);
+}
+for (const banned of ['太阳能量','森林能量','训练题','训练台','考试题','考试','考题','新题','测评','控制台','得分','永久变聪明','永远变聪明']) {
+  assert(!full.includes(banned), `full-course: rejected lesson 4 wording returned: ${banned}`);
+}
+assert(full.includes("card.dataset.sample==='wrong-cat'") && full.includes('state.tool.trainerPhase=5'), 'full-course: lesson 4 find-fix-retry flow missing');
+assert(full.includes("if(s.type==='tool')$('teacherPanel').hidden=true"), 'full-course: rehearsal overlay must close on interactive tool slides');
 assert(full.includes('promptResult') && full.includes('improvePrompt'), 'full-course: prompt tool must show and improve a result');
 assert(full.includes("how==='最后考我'") && full.includes('问题：'), 'full-course: quiz-style prompt must produce an actual question');
 assert(full.includes('projectArtifact') && full.includes('fixArtifact'), 'full-course: final project must include a fixable artifact');
@@ -59,4 +67,4 @@ assert(full.includes('projectArtifact') && full.includes('fixArtifact'), 'full-c
 const topLevel = await readdir(root);
 assert(!topLevel.some(name => /secrets|\.env$/i.test(name)), 'repository root: sensitive filename detected');
 
-console.log('validate: bright PPT decks, 16-slide high course, 10 x 9-slide lessons, 90 teacher scripts, tools and routes passed');
+console.log('validate: bright PPT decks, 16-slide high course, cat/dog guided flow, 90 teacher scripts, tools and routes passed');
