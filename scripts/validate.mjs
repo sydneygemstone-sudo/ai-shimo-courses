@@ -53,6 +53,7 @@ for (const id of ['rehearsalBtn','teacherSay','teacherDo','teacherBridge']) {
 assert(full.includes("query.get('teacher')==='1'"), 'full-course: direct teacher rehearsal route missing');
 assert(full.includes('mislabelBtn') && full.includes('fixLabelBtn'), 'full-course: trainer must demonstrate failure and label repair');
 assert(full.includes('promptResult') && full.includes('improvePrompt'), 'full-course: prompt tool must show and improve a result');
+assert(full.includes("how==='最后考我'") && full.includes('问题：'), 'full-course: quiz-style prompt must produce an actual question');
 assert(full.includes('projectArtifact') && full.includes('fixArtifact'), 'full-course: final project must include a fixable artifact');
 
 const topLevel = await readdir(root);
