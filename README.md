@@ -6,6 +6,7 @@
 
 - 三年级 60 分钟高阶版：`https://sydneygemstone-sudo.github.io/ai-shimo-courses/`
 - 一二年级十课版：`https://sydneygemstone-sudo.github.io/ai-shimo-courses/full-course/`
+- 一二年级教师排练版：`https://sydneygemstone-sudo.github.io/ai-shimo-courses/full-course/?teacher=1`
 - 源码与版本历史：`https://github.com/sydneygemstone-sudo/ai-shimo-courses`
 
 根入口先让老师选择年龄路线。三年级路线直接进入 16 张全屏互动幻灯；一二年级路线进入十课地图，每课固定 9 张幻灯。
@@ -24,7 +25,7 @@
 8. 毛球复述，孩子补正；
 9. 一个出口题结束。
 
-教师话术默认隐藏，点右上角“教师”或按 `S` 才会出现。左右方向键、底部按钮和左右滑动都可翻页。
+十课地图可打开“教师排练”，也可直接使用教师排练链接。十课共 90 页，每页都有三块独立提词：老师照着说、孩子现在做什么、怎样自然接到下一页。上课投影前可关闭；临时查看时点右上角“本页怎么讲”或按 `S`。左右方向键、底部按钮和左右滑动都可翻页。
 
 ## 外部活动映射
 

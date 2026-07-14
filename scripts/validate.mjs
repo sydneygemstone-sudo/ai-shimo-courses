@@ -46,8 +46,16 @@ assert(full.includes("toolTitle:'AutoDraw'") && full.includes("toolUrl:'https://
 assert(full.includes("toolTitle:'Quick, Draw!'") && full.includes("toolUrl:'https://quickdraw.withgoogle.com/'"), 'full-course: lesson 3 Quick, Draw! mapping failed');
 assert((full.match(/\{type:'/g) || []).length >= 9, 'full-course: nine-slide lesson grammar missing');
 assert(full.includes("Math.min(8,+m[2]-1)"), 'full-course: direct slide routing must stay within 9 slides');
+assert((full.match(/\bS\('/g) || []).length === 90, 'full-course: every one of 90 slides needs its own teacher script');
+for (const id of ['rehearsalBtn','teacherSay','teacherDo','teacherBridge']) {
+  assert(full.includes(`id="${id}"`), `full-course: teacher rehearsal control missing ${id}`);
+}
+assert(full.includes("query.get('teacher')==='1'"), 'full-course: direct teacher rehearsal route missing');
+assert(full.includes('mislabelBtn') && full.includes('fixLabelBtn'), 'full-course: trainer must demonstrate failure and label repair');
+assert(full.includes('promptResult') && full.includes('improvePrompt'), 'full-course: prompt tool must show and improve a result');
+assert(full.includes('projectArtifact') && full.includes('fixArtifact'), 'full-course: final project must include a fixable artifact');
 
 const topLevel = await readdir(root);
 assert(!topLevel.some(name => /secrets|\.env$/i.test(name)), 'repository root: sensitive filename detected');
 
-console.log('validate: bright PPT decks, 16-slide high course, 10 x 9-slide lessons, tools and routes passed');
+console.log('validate: bright PPT decks, 16-slide high course, 10 x 9-slide lessons, 90 teacher scripts, tools and routes passed');
