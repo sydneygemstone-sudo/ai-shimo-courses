@@ -52,6 +52,26 @@ for (const id of ['rehearsalBtn','teacherSay','teacherDo','teacherBridge']) {
 }
 assert(full.includes("query.get('teacher')==='1'"), 'full-course: direct teacher rehearsal route missing');
 assert(full.includes("title:'教毛球认猫狗'") && full.includes("toolTitle:'毛球认猫狗小游戏'"), 'full-course: lesson 4 cat/dog story missing');
+const aiLabSource = full.slice(full.indexOf('const aiLabs={'), full.indexOf('const S='));
+assert((aiLabSource.match(/\n\s+\d+:\{name:/g) || []).length === 10, 'full-course: every lesson needs one real AI lab');
+for (const url of [
+  'https://www.autodraw.com/',
+  'https://teachablemachine.withgoogle.com/train/image',
+  'https://quickdraw.withgoogle.com/',
+  'https://teachablemachine.withgoogle.com/train/audio',
+  'https://artsandculture.google.com/experiment/blob-opera/AAHWrq360NcGbw?hl=en',
+  'https://www.perplexity.ai/',
+  'https://chatgpt.com/',
+  'https://artsandculture.google.com/experiment/say-what-you-see/jwG3m7wQShZngw?hl=en',
+  'https://artsandculture.google.com/experiment/giga-manga/UAHzM-yZUdUpNA?hl=en',
+]) {
+  assert(aiLabSource.includes(url), `full-course: real AI lab URL missing ${url}`);
+}
+for (const token of ['liveTab','localTab','livePanel','localPanel','openAi','labFeedback','data-lab-result']) {
+  assert(full.includes(token), `full-course: real/local AI lab control missing ${token}`);
+}
+assert(full.includes('✨ 真实 AI 实战') && full.includes('本地预演 / 断网兜底'), 'full-course: real AI must be the visible primary path');
+assert(full.includes('target="_blank" rel="noopener"'), 'full-course: external AI tools must open safely in a separate tab');
 for (const id of ['catSamples','dogSamples','trainerSteps','trainerNext','trainerFeedback']) {
   assert(full.includes(`id="${id}"`), `full-course: lesson 4 guided interaction missing ${id}`);
 }
@@ -67,4 +87,4 @@ assert(full.includes('projectArtifact') && full.includes('fixArtifact'), 'full-c
 const topLevel = await readdir(root);
 assert(!topLevel.some(name => /secrets|\.env$/i.test(name)), 'repository root: sensitive filename detected');
 
-console.log('validate: bright PPT decks, 16-slide high course, cat/dog guided flow, 90 teacher scripts, tools and routes passed');
+console.log('validate: bright PPT decks, 16-slide high course, 10 real AI labs, 90 teacher scripts, local fallbacks and routes passed');
