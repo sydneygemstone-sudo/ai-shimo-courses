@@ -32,6 +32,8 @@ assert(quickRoutes.length === 2 && quickRoutes.every(host => host === 'quickdraw
 assert(autoRoutes[0] !== quickRoutes[0], 'fast-track: route collision');
 assert((fast.match(/data-track="young"/g) || []).length === 7, 'fast-track: young route must have 7 slides');
 assert((fast.match(/data-track="older"/g) || []).length === 7, 'fast-track: grade-3 route must have 7 slides');
+assert((fast.match(/data-local-lab="autodraw"/g) || []).length === 2, 'fast-track: local AutoDraw fallbacks missing');
+assert((fast.match(/data-local-lab="quickdraw"/g) || []).length === 2, 'fast-track: local Quick, Draw! fallbacks missing');
 
 const full = await readFile(new URL('full-course/index.html', root), 'utf8');
 const lessonIds = [...full.matchAll(/\{id:(\d+),phase:/g)].map(match => Number(match[1]));

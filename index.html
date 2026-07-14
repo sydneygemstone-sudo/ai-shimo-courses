@@ -253,7 +253,7 @@
                 <div class="activity-actions">
                   <a class="btn primary activity-link" href="https://www.autodraw.com/" target="_blank" rel="noopener" data-route="autodraw">打开 AutoDraw ↗</a>
                 </div>
-                <div class="fallback"><b>断网替代：</b>孩子画 5 秒，老师和同学抢答。告诉大家：人的猜测也依赖以前看过的例子。</div>
+                <div class="fallback"><b>断网替代：</b>直接用课件内三步猜图，不需要纸笔。 <button class="btn warn" type="button" data-local-lab="autodraw">开始三步猜图</button><span data-local-output></span></div>
               </div>
             </div>
             <div class="big-emoji" aria-hidden="true">✏️✨</div>
@@ -272,7 +272,7 @@
                 <div class="activity-actions">
                   <a class="btn primary activity-link" href="https://quickdraw.withgoogle.com/" target="_blank" rel="noopener" data-route="quickdraw">打开 Quick, Draw! ↗</a>
                 </div>
-                <div class="fallback"><b>断网替代：</b>老师念题并计时 20 秒，一人画、全班猜；第二轮故意画怪，再问“为什么更难？”</div>
+                <div class="fallback"><b>断网替代：</b>课件随机抽题并本地倒计时，不需要实体题卡。 <button class="btn warn" type="button" data-local-lab="quickdraw">抽题并开始 20 秒</button><span data-local-output></span></div>
               </div>
             </div>
             <div class="big-emoji" aria-hidden="true">⏱️🖍️</div>
@@ -339,7 +339,7 @@
               <div class="activity">
                 <p>先预测“画到第几笔它能猜到”，再分别画典型猫和奇怪猫。记录建议出现的时机。</p>
                 <div class="activity-actions"><a class="btn primary activity-link" href="https://www.autodraw.com/" target="_blank" rel="noopener" data-route="autodraw">打开 AutoDraw ↗</a></div>
-                <div class="fallback"><b>断网替代：</b>三人一组，一人逐笔画，另外两人记录自己从第几笔开始猜中。</div>
+                <div class="fallback"><b>断网替代：</b>用课件内三步线索，记录自己第几步猜中。 <button class="btn warn" type="button" data-local-lab="autodraw">开始三步猜图</button><span data-local-output></span></div>
               </div>
             </div>
             <div class="big-emoji" aria-hidden="true">✍️💡</div>
@@ -355,7 +355,7 @@
               <div class="activity">
                 <p>第一轮画最典型版本；第二轮保留含义但改变轮廓、方向或比例。先预测再验证。</p>
                 <div class="activity-actions"><a class="btn primary activity-link" href="https://quickdraw.withgoogle.com/" target="_blank" rel="noopener" data-route="quickdraw">打开 Quick, Draw! ↗</a></div>
-                <div class="fallback"><b>断网替代：</b>用 20 秒人类分类挑战；统计“典型画”和“变形画”的猜中时间。</div>
+                <div class="fallback"><b>断网替代：</b>课件随机抽题并本地倒计时，比较典型画和变形画。 <button class="btn warn" type="button" data-local-lab="quickdraw">抽题并开始 20 秒</button><span data-local-output></span></div>
               </div>
             </div>
             <div class="big-emoji" aria-hidden="true">⚡🖍️</div>
@@ -594,6 +594,31 @@
         document.getElementById('fastTrainStatus').textContent = balanced ? `模型预测：${target}。下一步故意少喂一类，观察它怎样偏。` : '模型犹豫：两类训练量差太大。给较少的一类补例子，再训练。';
       }
 
+      function startLocalLab(button) {
+        const output = button.closest('.fallback').querySelector('[data-local-output]');
+        if (button.dataset.localLab === 'autodraw') {
+          const hints = ['① 先出现一个圆：你猜是什么？', '② 圆上多了两个尖耳朵：改答案吗？', '③ 加上眼睛和胡须：答案是猫。你第几步猜中？'];
+          const step = Number(button.dataset.step || 0) % hints.length;
+          output.textContent = ` ${hints[step]}`;
+          button.dataset.step = String(step + 1);
+          button.textContent = step === hints.length - 1 ? '重新开始' : '显示下一步';
+          return;
+        }
+        const topics = ['猫', '雨伞', '自行车', '鱼', '闹钟', '树'];
+        const topic = topics[Math.floor(Math.random() * topics.length)];
+        let seconds = 20;
+        clearInterval(button._timer);
+        output.textContent = ` 题目：${topic} · ${seconds} 秒`;
+        button._timer = setInterval(() => {
+          seconds -= 1;
+          output.textContent = ` 题目：${topic} · ${seconds} 秒`;
+          if (!seconds) {
+            clearInterval(button._timer);
+            output.textContent = ` 时间到！展示“${topic}”，让同伴猜。`;
+          }
+        }, 1000);
+      }
+
       document.querySelectorAll('[data-track-select]').forEach(button => button.addEventListener('click', () => chooseTrack(button.dataset.trackSelect)));
       document.getElementById('prevBtn').addEventListener('click', () => go(-1));
       document.getElementById('nextBtn').addEventListener('click', () => go(1));
@@ -605,6 +630,7 @@
       document.getElementById('fastAddLeaf').addEventListener('click', () => addFastSample('leaf'));
       document.getElementById('fastTrain').addEventListener('click', trainFastModel);
       document.getElementById('fastTest').addEventListener('click', testFastModel);
+      document.querySelectorAll('[data-local-lab]').forEach(button => button.addEventListener('click', () => startLocalLab(button)));
       document.getElementById('fullBtn').addEventListener('click', () => document.fullscreenElement ? document.exitFullscreen?.() : document.documentElement.requestFullscreen?.());
       document.querySelectorAll('[data-copy-prompt]').forEach(button => button.addEventListener('click', () => copyPrompt(button)));
       document.querySelectorAll('.activity-link').forEach(link => link.addEventListener('click', event => event.stopPropagation()));
